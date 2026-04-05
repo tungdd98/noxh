@@ -38,6 +38,38 @@ finance-tracker/
 
 ---
 
+## Task 0: Checkout nhánh làm việc từ main
+
+**Files:** không có thay đổi file nào
+
+- [ ] **Step 1: Đảm bảo đang ở nhánh main và branch sạch**
+
+```bash
+cd /Users/mac/Desktop/finance-tracker
+git checkout main
+git status
+```
+
+Expected: `On branch main`, `nothing to commit, working tree clean`
+
+- [ ] **Step 2: Tạo và checkout nhánh mới**
+
+```bash
+git checkout -b feat/nextjs-base-setup
+```
+
+Expected: `Switched to a new branch 'feat/nextjs-base-setup'`
+
+- [ ] **Step 3: Xác nhận đang ở đúng nhánh**
+
+```bash
+git branch
+```
+
+Expected: thấy `* feat/nextjs-base-setup`
+
+---
+
 ## Task 1: Khởi tạo Next.js project
 
 **Files:**
