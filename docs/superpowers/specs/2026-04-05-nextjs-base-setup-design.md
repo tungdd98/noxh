@@ -19,6 +19,7 @@ npx create-next-app@latest finance-tracker
 ```
 
 **Lựa chọn khi setup:**
+
 - TypeScript: Yes
 - ESLint: Yes
 - Tailwind CSS: Yes
@@ -55,19 +56,19 @@ finance-tracker/
 
 ## 3. Tool Stack & Versions
 
-| Package | Version | Mục đích |
-|---|---|---|
-| Next.js | 15.x | Framework |
-| React | 19.x | UI library |
-| Tailwind CSS | 4.x | Styling |
-| shadcn/ui | latest | Component library |
-| TypeScript | 5.x | Type safety |
-| Prettier | 3.x | Code formatting |
-| prettier-plugin-tailwindcss | latest | Auto-sort Tailwind classes |
-| Husky | 9.x | Git hooks |
-| lint-staged | 15.x | Run linters on staged files |
-| commitlint | 19.x | Enforce commit message format |
-| @commitlint/config-conventional | 19.x | Conventional Commits ruleset |
+| Package                         | Version | Mục đích                      |
+| ------------------------------- | ------- | ----------------------------- |
+| Next.js                         | 15.x    | Framework                     |
+| React                           | 19.x    | UI library                    |
+| Tailwind CSS                    | 4.x     | Styling                       |
+| shadcn/ui                       | latest  | Component library             |
+| TypeScript                      | 5.x     | Type safety                   |
+| Prettier                        | 3.x     | Code formatting               |
+| prettier-plugin-tailwindcss     | latest  | Auto-sort Tailwind classes    |
+| Husky                           | 9.x     | Git hooks                     |
+| lint-staged                     | 15.x    | Run linters on staged files   |
+| commitlint                      | 19.x    | Enforce commit message format |
+| @commitlint/config-conventional | 19.x    | Conventional Commits ruleset  |
 
 ---
 
@@ -90,6 +91,7 @@ npm install -D prettier prettier-plugin-tailwindcss
 ```
 
 File `.prettierrc`:
+
 ```json
 {
   "semi": true,
@@ -116,11 +118,13 @@ npx husky init
 ```
 
 Pre-commit hook (`.husky/pre-commit`):
+
 ```bash
 npx lint-staged
 ```
 
 Cấu hình `lint-staged` trong `package.json`:
+
 ```json
 {
   "lint-staged": {
@@ -137,13 +141,15 @@ npm install -D @commitlint/cli @commitlint/config-conventional
 ```
 
 File `commitlint.config.js`:
+
 ```js
 export default {
   extends: ['@commitlint/config-conventional'],
-}
+};
 ```
 
 Commit-msg hook (`.husky/commit-msg`):
+
 ```bash
 npx --no -- commitlint --edit $1
 ```
@@ -165,14 +171,14 @@ git commit
 
 ## 6. Commit Convention (Conventional Commits)
 
-| Type | Mục đích |
-|---|---|
-| `feat:` | Tính năng mới |
-| `fix:` | Sửa bug |
-| `chore:` | Maintenance, config |
-| `docs:` | Tài liệu |
-| `style:` | Format, không đổi logic |
-| `refactor:` | Refactor code |
+| Type        | Mục đích                |
+| ----------- | ----------------------- |
+| `feat:`     | Tính năng mới           |
+| `fix:`      | Sửa bug                 |
+| `chore:`    | Maintenance, config     |
+| `docs:`     | Tài liệu                |
+| `style:`    | Format, không đổi logic |
+| `refactor:` | Refactor code           |
 
 ---
 
