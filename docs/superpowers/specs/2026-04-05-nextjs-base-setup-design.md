@@ -56,19 +56,19 @@ finance-tracker/
 
 ## 3. Tool Stack & Versions
 
-| Package                         | Version | Mục đích                      |
-| ------------------------------- | ------- | ----------------------------- |
-| Next.js                         | 15.x    | Framework                     |
-| React                           | 19.x    | UI library                    |
-| Tailwind CSS                    | 4.x     | Styling                       |
-| shadcn/ui                       | latest  | Component library             |
-| TypeScript                      | 5.x     | Type safety                   |
-| Prettier                        | 3.x     | Code formatting               |
-| prettier-plugin-tailwindcss     | latest  | Auto-sort Tailwind classes    |
-| Husky                           | 9.x     | Git hooks                     |
-| lint-staged                     | 15.x    | Run linters on staged files   |
-| commitlint                      | 19.x    | Enforce commit message format |
-| @commitlint/config-conventional | 19.x    | Conventional Commits ruleset  |
+| Package                         | Version       | Mục đích                      |
+| ------------------------------- | ------------- | ----------------------------- |
+| Next.js                         | 16.x (latest) | Framework                     |
+| React                           | 19.x          | UI library                    |
+| Tailwind CSS                    | 4.x           | Styling                       |
+| shadcn/ui                       | latest        | Component library             |
+| TypeScript                      | 5.x           | Type safety                   |
+| Prettier                        | 3.x           | Code formatting               |
+| prettier-plugin-tailwindcss     | latest        | Auto-sort Tailwind classes    |
+| Husky                           | 9.x           | Git hooks                     |
+| lint-staged                     | 15.x          | Run linters on staged files   |
+| commitlint                      | 19.x          | Enforce commit message format |
+| @commitlint/config-conventional | 19.x          | Conventional Commits ruleset  |
 
 ---
 

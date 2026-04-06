@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Khởi tạo project Next.js 15 với đầy đủ tooling (Tailwind CSS, shadcn/ui, Prettier, ESLint, Husky, lint-staged, Commitlint) sẵn sàng cho phát triển frontend ứng dụng finance-tracker.
+**Goal:** Khởi tạo project Next.js 16 (latest) với đầy đủ tooling (Tailwind CSS, shadcn/ui, Prettier, ESLint, Husky, lint-staged, Commitlint) sẵn sàng cho phát triển frontend ứng dụng finance-tracker.
 
 **Architecture:** Project dùng Next.js App Router, không có `src/` directory. Các tool chất lượng code (Prettier, ESLint) được tích hợp vào git workflow qua Husky + lint-staged, commit message được enforce bằng Commitlint theo chuẩn Conventional Commits.
 
-**Tech Stack:** Next.js 15, React 19, TypeScript 5, Tailwind CSS 4, shadcn/ui, Prettier 3, ESLint, Husky 9, lint-staged 15, Commitlint 19
+**Tech Stack:** Next.js 16 (latest), React 19, TypeScript 5, Tailwind CSS 4, shadcn/ui, Prettier 3, ESLint, Husky 9, lint-staged 15, Commitlint 19
 
 ---
 
