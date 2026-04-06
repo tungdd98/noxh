@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Khởi tạo project Next.js 15 với đầy đủ tooling (Tailwind CSS, shadcn/ui, Prettier, ESLint, Husky, lint-staged, Commitlint) sẵn sàng cho phát triển frontend ứng dụng finance-tracker.
+**Goal:** Khởi tạo project Next.js 16 (latest) với đầy đủ tooling (Tailwind CSS, shadcn/ui, Prettier, ESLint, Husky, lint-staged, Commitlint) sẵn sàng cho phát triển frontend ứng dụng finance-tracker.
 
 **Architecture:** Project dùng Next.js App Router, không có `src/` directory. Các tool chất lượng code (Prettier, ESLint) được tích hợp vào git workflow qua Husky + lint-staged, commit message được enforce bằng Commitlint theo chuẩn Conventional Commits.
 
-**Tech Stack:** Next.js 15, React 19, TypeScript 5, Tailwind CSS 4, shadcn/ui, Prettier 3, ESLint, Husky 9, lint-staged 15, Commitlint 19
+**Tech Stack:** Next.js 16 (latest), React 19, TypeScript 5, Tailwind CSS 4, shadcn/ui, Prettier 3, ESLint, Husky 9, lint-staged 15, Commitlint 19
 
 ---
 
@@ -73,6 +73,7 @@ Expected: thấy `* feat/nextjs-base-setup`
 ## Task 1: Khởi tạo Next.js project
 
 **Files:**
+
 - Create: `finance-tracker/` (toàn bộ project từ create-next-app)
 
 > **Lưu ý:** Task này chạy trong thư mục cha của `finance-tracker/` (tức `/Users/mac/Desktop/`), vì `create-next-app` sẽ tạo thư mục `finance-tracker/` mới. Nhưng vì thư mục đã tồn tại với `.git/` và `docs/`, ta cần chạy lệnh bên trong thư mục đó.
@@ -95,6 +96,7 @@ npx create-next-app@latest . \
 > Flag `--no-git` vì repo đã được init rồi. Dấu `.` để cài vào thư mục hiện tại.
 
 Expected output:
+
 ```
 ✔ Would you like to use TypeScript? … Yes
 ✔ Would you like to use ESLint? … Yes
@@ -153,6 +155,7 @@ git commit -m "chore: initialize Next.js 15 project with TypeScript, Tailwind, A
 ## Task 2: Cài đặt và cấu hình shadcn/ui
 
 **Files:**
+
 - Create: `components/ui/` (auto-generated bởi shadcn)
 - Modify: `lib/utils.ts` (auto-generated bởi shadcn)
 - Modify: `app/globals.css` (shadcn thêm CSS variables)
@@ -167,6 +170,7 @@ npx shadcn@latest init
 ```
 
 Khi được hỏi, chọn:
+
 - Style: `New York`
 - Base color: `Neutral`
 - CSS variables: `Yes`
@@ -217,6 +221,7 @@ git commit -m "chore: add shadcn/ui with New York style and Neutral base color"
 ## Task 3: Cài đặt và cấu hình Prettier
 
 **Files:**
+
 - Create: `.prettierrc`
 - Create: `.prettierignore`
 - Modify: `package.json` (thêm script `format`)
@@ -286,6 +291,7 @@ git commit -m "chore: add Prettier with tailwindcss plugin"
 ## Task 4: Cấu hình ESLint tích hợp Prettier
 
 **Files:**
+
 - Modify: `eslint.config.mjs` (thêm prettier config)
 
 - [ ] **Step 1: Cài eslint-config-prettier**
@@ -341,6 +347,7 @@ git commit -m "chore: integrate eslint-config-prettier to avoid conflicts"
 ## Task 5: Cài đặt Husky và lint-staged
 
 **Files:**
+
 - Create: `.husky/pre-commit`
 - Modify: `package.json` (thêm `lint-staged` config và `prepare` script)
 
@@ -408,6 +415,7 @@ git commit -m "chore: add Husky and lint-staged for pre-commit hooks"
 ## Task 6: Cài đặt và cấu hình Commitlint
 
 **Files:**
+
 - Create: `commitlint.config.js`
 - Create: `.husky/commit-msg`
 
@@ -473,6 +481,7 @@ git commit -m "chore: add commitlint with conventional commits config"
 ## Task 7: Dọn dẹp và kiểm tra toàn bộ
 
 **Files:**
+
 - Modify: `app/page.tsx` (thay nội dung mặc định bằng placeholder đơn giản)
 
 - [ ] **Step 1: Đơn giản hóa app/page.tsx**
