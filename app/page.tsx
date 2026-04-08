@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -17,6 +18,25 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+
+function CurrencyInputDemo() {
+  const [salary, setSalary] = useState<number | ''>('');
+  return (
+    <div className="space-y-1">
+      <CurrencyInput
+        id="salary"
+        placeholder="VD: 10.000.000"
+        value={salary}
+        onChange={setSalary}
+      />
+      {salary !== '' && (
+        <p className="text-muted-foreground text-xs">
+          Giá trị: {salary.toLocaleString('vi-VN')} đồng
+        </p>
+      )}
+    </div>
+  );
+}
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -221,6 +241,10 @@ export default function DesignSystemPage() {
                 <div className="space-y-1.5">
                   <Label>Disabled</Label>
                   <Input placeholder="Không thể chỉnh sửa" disabled />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="salary">Thu nhập (VNĐ)</Label>
+                  <CurrencyInputDemo />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="note">Ghi chú</Label>
