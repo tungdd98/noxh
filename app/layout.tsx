@@ -1,17 +1,25 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Be_Vietnam_Pro, Noto_Sans } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
-const inter = Inter({
+const beVietnamPro = Be_Vietnam_Pro({
+  variable: '--font-heading',
+  subsets: ['vietnamese', 'latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+});
+
+const notoSans = Noto_Sans({
   variable: '--font-sans',
-  subsets: ['latin'],
+  subsets: ['vietnamese', 'latin'],
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'Finance Tracker',
-  description: 'Personal finance tracking application',
+  title: 'Nhà Ở Xã Hội',
+  description: 'Tra cứu thông tin nhà ở xã hội',
 };
 
 export default function RootLayout({
@@ -20,7 +28,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="vi"
+      className={`${beVietnamPro.variable} ${notoSans.variable} h-full antialiased`}
+    >
       <body className="flex min-h-full flex-col">
         {children}
         <Toaster />
