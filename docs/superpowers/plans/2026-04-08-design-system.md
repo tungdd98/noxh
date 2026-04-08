@@ -10,6 +10,26 @@
 
 ---
 
+## Task 0: Tạo feature branch
+
+- [ ] **Bước 1: Tạo và checkout branch mới từ main**
+
+```bash
+git checkout main
+git pull
+git checkout -b feat/design-system
+```
+
+- [ ] **Bước 2: Verify đang ở đúng branch**
+
+```bash
+git branch --show-current
+```
+
+Expected: `feat/design-system`
+
+---
+
 ## File Map
 
 | File                                                      | Hành động       | Mục đích                                         |
