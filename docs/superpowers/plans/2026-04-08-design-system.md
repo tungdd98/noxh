@@ -25,36 +25,13 @@
 | `components/ui/checkbox.tsx`    | Create (shadcn) | Checkbox primitive                                    |
 | `components/ui/radio-group.tsx` | Create (shadcn) | Radio group primitive                                 |
 | `components/ui/sonner.tsx`      | Create (shadcn) | Toast via Sonner                                      |
-| `components/finance/`           | Delete          | Xóa toàn bộ finance components và tests               |
+| ~~`components/finance/`~~       | ~~Delete~~      | ~~Xóa toàn bộ finance components~~ ✅ Done            |
 
 ---
 
-## Task 0: Xóa Finance Components
+## ~~Task 0: Xóa Finance Components~~ ✅ Done
 
-**Files:**
-
-- Delete: `components/finance/` (toàn bộ thư mục)
-
-- [ ] **Bước 1: Xóa thư mục finance**
-
-```bash
-rm -rf components/finance/
-```
-
-- [ ] **Bước 2: Verify đã xóa**
-
-```bash
-ls components/
-```
-
-Expected: không còn thư mục `finance/`
-
-- [ ] **Bước 3: Commit**
-
-```bash
-git add -A
-git commit -m "chore(design-system): remove finance components"
-```
+`components/finance/` đã được xóa và commit rồi.
 
 ---
 
