@@ -1,108 +1,124 @@
-# Design System — Finance Tracker
+# Design System — Nhà Ở Xã Hội
 
 **Date:** 2026-04-08  
 **Status:** Approved  
-**Approach:** B — Design Tokens → shadcn/ui → CVA Finance Variants
+**Approach:** Indigo Modern — Design Tokens → shadcn/ui → CVA Variants
 
 ---
 
 ## 1. Context & Goals
 
-Web app quản lý tài chính cá nhân cho 2 người dùng (hoàng thượng + hoàng hậu), sử dụng 1 tài khoản đăng nhập chung. Mục tiêu xây dựng design system nhất quán, dễ mở rộng, phong cách **Stripe-inspired**: trắng sạch, shadow nhẹ, bo góc, màu sắc tinh tế.
+Web app tra cứu thông tin nhà ở xã hội dành cho người dân (đặc biệt giới trẻ). Mục tiêu xây dựng design system nhất quán, dễ mở rộng, phong cách **Indigo Modern**: sạch sẽ, shadow nhẹ, bo góc, màu tươi sáng.
 
 **Yêu cầu phong cách:**
 
-- Tông màu hợp mệnh: Kim (hoàng hậu) = trắng/bạc, Thủy (hoàng thượng) = navy/xanh đậm
-- Kim sinh Thủy → accent purple-navy trên nền trắng, đúng chất Stripe
-- Đơn giản, hiện đại — không sến, không sặc sỡ
+- Đơn giản, hiện đại, thân thiện với giới trẻ — không màu mè, không sến
+- Tông màu chủ đạo: Indigo (`#6366F1`) — kiểu Notion / Linear
+- Nền tím nhạt rất nhẹ (`#F5F3FF`) thay vì trắng tinh
+- Shadow nhẹ, bo góc `0.5rem`
 - Hỗ trợ Light mode + Dark mode
 
 ---
 
-## 2. Architecture — 3 Lớp
+## 2. Architecture — 2 Lớp
 
 ```
 Layer 1: Design Tokens        app/globals.css
            ↓
 Layer 2: UI Primitives        components/ui/       (shadcn/ui + Radix)
-           ↓
-Layer 3: Finance Components   components/finance/  (CVA variants)
 ```
 
 **Nguyên tắc:** Component không bao giờ dùng màu cứng (hex). Mọi giá trị đều tham chiếu CSS variable từ Layer 1.
+
+> Không có Layer 3 Finance Components — đã xóa hoàn toàn.
 
 ---
 
 ## 3. Color Token System
 
-### Brand Scale (Stripe Purple)
+### Brand Scale (Indigo)
 
-| Token         | Value     | Dùng cho                                |
-| ------------- | --------- | --------------------------------------- |
-| `--brand-50`  | `#eeecff` | Hover tint, badge background            |
-| `--brand-200` | `#c7c4ff` | Focus ring                              |
-| `--brand-500` | `#635bff` | Primary button, link — màu Stripe chính |
-| `--brand-600` | `#533afd` | Button `:hover`                         |
-| `--brand-900` | `#0a2540` | Dark card, heading chính — Stripe navy  |
+| Token         | Value     | Dùng cho                           |
+| ------------- | --------- | ---------------------------------- |
+| `--brand-50`  | `#EEF2FF` | Hover tint, badge background       |
+| `--brand-200` | `#C7D2FE` | Focus ring                         |
+| `--brand-400` | `#818CF8` | Icon accent, secondary element     |
+| `--brand-500` | `#6366F1` | Primary button, link — màu chủ đạo |
+| `--brand-600` | `#4F46E5` | Button `:hover`                    |
+| `--brand-950` | `#1E1B4B` | Dark card bg, heading chính        |
 
-### Neutral Scale (Stripe Grey — blue-grey nhẹ)
+### Semantic Colors (App-specific)
 
-| Token           | Value     |
-| --------------- | --------- | ------------------------------------------------- |
-| `--neutral-50`  | `#f6f9fb` |
-| `--neutral-200` | `#e5edf5` |
-| `--neutral-400` | `#aab4c1` |
-| `--neutral-600` | `#667691` |
-| `--neutral-700` | `#3f4b66` |
-| `--neutral-900` | `#0a2540` | _(cùng giá trị brand-900, dùng cho text heading)_ |
-
-### Semantic Colors (Finance-specific)
-
-| Token             | Value     | Dùng cho                |
-| ----------------- | --------- | ----------------------- |
-| `--color-income`  | `#09825d` | Thu nhập                |
-| `--color-expense` | `#df1b41` | Chi tiêu                |
-| `--color-saving`  | `#635bff` | Tiết kiệm (reuse brand) |
-| `--color-warning` | `#f5a623` | Cảnh báo vượt budget    |
+| Token                 | Light     | Dark      | Dùng cho                 |
+| --------------------- | --------- | --------- | ------------------------ |
+| `--color-success`     | `#059669` | `#34D399` | Đủ điều kiện             |
+| `--color-warning`     | `#D97706` | `#FCD34D` | Cần xem lại              |
+| `--color-destructive` | `#DC2626` | `#F87171` | Không đủ điều kiện / Lỗi |
+| `--color-info`        | `#0284C7` | `#38BDF8` | Thông tin                |
 
 ### Semantic Aliases (dùng trong component)
 
 **Light mode (`:root`):**
 
 ```css
---background: #ffffff --surface: #f6f9fb --foreground: #0a2540
-  --muted-foreground: #667691 --border: #e5edf5 --input: #e5edf5
-  --primary: #635bff --primary-foreground: #ffffff --ring: #c7c4ff
-  --radius: 0.625rem;
+--background: #ffffff;
+--surface: #f5f3ff;
+--foreground: #1e1b4b;
+--muted-foreground: #64748b;
+--border: #e0e7ff;
+--input: #e0e7ff;
+--primary: #6366f1;
+--primary-foreground: #ffffff;
+--secondary: #eef2ff;
+--secondary-foreground: #4338ca;
+--muted: #f5f3ff;
+--accent: #eef2ff;
+--accent-foreground: #4338ca;
+--ring: #c7d2fe;
+--radius: 0.5rem;
 ```
 
 **Dark mode (`.dark`):**
 
 ```css
---background: #0a2540 --surface: #0e2d4a --foreground: #e5edf5
-  --muted-foreground: #aab4c1 --border: #1a3654 --input: #1a3654
-  --primary: #7b73ff --primary-foreground: #ffffff --ring: #533afd;
+--background: #0f0e1a;
+--surface: #1a1830;
+--foreground: #e0e7ff;
+--muted-foreground: #818cf8;
+--border: #2d2b55;
+--input: #2d2b55;
+--primary: #818cf8;
+--primary-foreground: #1e1b4b;
+--secondary: #1a1830;
+--secondary-foreground: #c7d2fe;
+--muted: #1a1830;
+--accent: #2d2b55;
+--accent-foreground: #c7d2fe;
+--ring: #4f46e5;
 ```
 
 ---
 
 ## 4. Typography System
 
-**Font family:** Inter (Google Fonts) — thay thế Geist hiện tại.
+**Font heading:** Be Vietnam Pro (Google Fonts) — thiết kế riêng cho tiếng Việt  
+**Font body:** Noto Sans (Google Fonts) — hỗ trợ dấu tiếng Việt tốt, dễ đọc
 
-| Bậc     | Size | Weight | Letter-spacing | Dùng cho                       |
-| ------- | ---- | ------ | -------------- | ------------------------------ |
-| Display | 36px | 700    | -1px           | Số tiền lớn trên balance card  |
-| H1      | 28px | 700    | -0.5px         | Tiêu đề trang                  |
-| H2      | 22px | 600    | -0.3px         | Tiêu đề section                |
-| H3      | 17px | 600    | -0.1px         | Tiêu đề card                   |
-| Body    | 14px | 400    | 0              | Nội dung, danh sách giao dịch  |
-| Caption | 12px | 400    | +0.1px         | Timestamp, chú thích           |
-| Label   | 11px | 600    | +0.5px         | Nhãn cột, danh mục (uppercase) |
+| Bậc     | Size | Weight | Line-height | Dùng cho                              |
+| ------- | ---- | ------ | ----------- | ------------------------------------- |
+| Display | 36px | 700    | 1.2         | Số lớn, hero heading                  |
+| H1      | 28px | 700    | 1.25        | Tiêu đề trang                         |
+| H2      | 22px | 600    | 1.3         | Tiêu đề section                       |
+| H3      | 17px | 600    | 1.4         | Tiêu đề card                          |
+| Body    | 14px | 400    | 1.6         | Nội dung chính                        |
+| Caption | 12px | 400    | 1.5         | Timestamp, chú thích                  |
+| Label   | 11px | 600    | 1.0         | Nhãn cột (uppercase, +0.5px tracking) |
 
-**Quy tắc số tiền:** Mọi giá trị tiền tệ dùng `font-variant-numeric: tabular-nums` để cột số thẳng hàng.
+**Quy tắc:**
 
-**Quy tắc chung:** Chỉ dùng weight 400 / 600 / 700. Không dùng weight 300. Không bold body text.
+- Chỉ dùng weight 400 / 600 / 700
+- Không dùng weight 300
+- Không bold body text
 
 ---
 
@@ -110,66 +126,73 @@ Layer 3: Finance Components   components/finance/  (CVA variants)
 
 ### Layer 2 — UI Primitives (`components/ui/` via shadcn CLI)
 
-| Component    | Variants                                          | Ghi chú                                                |
-| ------------ | ------------------------------------------------- | ------------------------------------------------------ |
-| `Button`     | `primary` · `secondary` · `ghost` · `destructive` | 3 sizes: sm / md / lg                                  |
-| `Input`      | default · error · disabled                        | Có currency variant với prefix ₫                       |
-| `Select`     | —                                                 | Radix Select, dùng cho danh mục                        |
-| `RadioGroup` | —                                                 | Chọn loại giao dịch                                    |
-| `Checkbox`   | —                                                 | Có indeterminate state                                 |
-| `Dialog`     | —                                                 | Form thêm/sửa giao dịch, confirm xoá                   |
-| `Badge`      | `default` · `income` · `expense` · `saving`       | Finance variants qua CVA                               |
-| `Card`       | `default` · `dark` · `stat`                       | Dark variant = nền `--brand-900`                       |
-| `Toast`      | `success` · `error` · `warning`                   | Dùng Sonner (`npx shadcn add sonner`), auto-dismiss 4s |
-
-### Layer 3 — Finance Components (`components/finance/`)
-
-| Component          | Mô tả                                                         |
-| ------------------ | ------------------------------------------------------------- |
-| `TransactionBadge` | Wrap Badge với income/expense/saving logic                    |
-| `BalanceCard`      | Card dark variant + Display typography + tabular-nums         |
-| `AmountInput`      | Input + prefix ₫ + tabular-nums + số âm/dương tự động đổi màu |
+| Component    | Variants                                                      | Ghi chú                          |
+| ------------ | ------------------------------------------------------------- | -------------------------------- |
+| `Button`     | `default` · `secondary` · `outline` · `ghost` · `destructive` | 3 sizes: sm / md / lg            |
+| `Input`      | default · error · disabled                                    | Visible label, error below field |
+| `Textarea`   | default · error · disabled                                    | —                                |
+| `Select`     | —                                                             | Radix Select                     |
+| `Checkbox`   | —                                                             | indeterminate state              |
+| `RadioGroup` | —                                                             | —                                |
+| `Badge`      | `default` · `success` · `warning` · `destructive` · `info`    | CVA variants                     |
+| `Card`       | —                                                             | shadcn Card primitive            |
+| `Sonner`     | `success` · `error` · `warning` · `info`                      | Auto-dismiss 4s                  |
 
 ---
 
-## 6. File Structure
+## 6. Design System Preview Page (`app/page.tsx`)
+
+Trang preview standalone với dark/light toggle ở góc trên phải. Các section theo thứ tự:
+
+1. **Colors** — Brand scale swatches + semantic color chips (success/warning/destructive/info)
+2. **Typography** — Hiển thị từng bậc Display → Label với text mẫu tiếng Việt
+3. **Buttons** — 5 variants × 3 sizes + loading state
+4. **Badges** — 5 variants
+5. **Forms** — Input, Textarea, Select, Checkbox, RadioGroup (có label, error state, disabled)
+6. **Toast / Notification** — 4 nút trigger: success, error, warning, info
+
+---
+
+## 7. File Structure
 
 ```
 app/
 └── globals.css              ← Design tokens (Layer 1)
 
 components/
-├── ui/                      ← shadcn generate (Layer 2)
-│   ├── button.tsx
-│   ├── input.tsx
-│   ├── select.tsx
-│   ├── dialog.tsx
-│   ├── badge.tsx
-│   ├── card.tsx
-│   ├── toast.tsx
-│   ├── checkbox.tsx
-│   └── radio-group.tsx
-└── finance/                 ← Custom wrappers (Layer 3)
-    ├── transaction-badge.tsx
-    ├── balance-card.tsx
-    └── amount-input.tsx
+└── ui/                      ← shadcn generate (Layer 2)
+    ├── button.tsx
+    ├── input.tsx
+    ├── textarea.tsx
+    ├── select.tsx
+    ├── checkbox.tsx
+    ├── radio-group.tsx
+    ├── badge.tsx
+    ├── card.tsx
+    └── sonner.tsx
 ```
 
----
-
-## 7. Build Order
-
-1. **CSS Tokens** — Cập nhật `globals.css`: thay toàn bộ variables hiện tại bằng Stripe token system, thêm dark mode
-2. **Inter Font** — Cài qua `next/font/google`, thay Geist trong `layout.tsx`
-3. **shadcn add** — Chạy CLI thêm từng component: `button input select dialog badge card toast checkbox radio-group`
-4. **Finance Variants** — Tạo `components/finance/`: TransactionBadge, BalanceCard, AmountInput
-5. **Dark Mode** — Verify token dark mode hoạt động đúng, test toggle
+> `components/finance/` đã bị xóa hoàn toàn.
 
 ---
 
-## 8. Out of Scope
+## 8. Build Order
 
-- Avatar component (app 1 tài khoản, không cần)
-- Chart/Graph component (thuộc phase sau)
+1. **CSS Tokens** — Cập nhật `globals.css`: thay Stripe palette → Indigo palette, cập nhật dark mode
+2. **Font** — Cài `Be Vietnam Pro` + `Noto Sans` qua `next/font/google`, cập nhật `layout.tsx`
+3. **shadcn add** — Thêm: `button input textarea select checkbox radio-group badge card sonner`
+4. **CVA Badge Variants** — Thêm `success`, `warning`, `info` variant vào `components/ui/badge.tsx`
+5. **Xóa Finance Components** — Xóa `components/finance/` và các test liên quan
+6. **Cập nhật page.tsx** — Viết lại Design System Preview Page với 6 sections
+7. **Dark Mode** — Verify token dark mode hoạt động đúng với toggle
+
+---
+
+## 9. Out of Scope
+
+- Layout trang Nhà Ở Xã Hội (phase sau)
+- Dialog / Modal component (phase sau)
+- Avatar, Chart/Graph (phase sau)
 - Animation / micro-interaction (phase sau)
 - Mobile responsive (sẽ xử lý khi build feature pages)
+- Eligibility checker, project search (phase sau)
