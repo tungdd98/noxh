@@ -19,8 +19,17 @@ export function ProjectList({
 }: Props) {
   if (loading) {
     return (
-      <div className="text-muted-foreground flex h-40 items-center justify-center text-sm">
-        Đang tải dữ liệu dự án...
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="animate-pulse rounded-xl border p-4">
+            <div className="mb-2 flex items-start justify-between gap-2">
+              <div className="bg-muted h-4 w-3/5 rounded" />
+              <div className="bg-muted h-5 w-20 rounded-full" />
+            </div>
+            <div className="bg-muted mb-3 h-3 w-2/5 rounded" />
+            <div className="bg-muted h-3 w-full rounded" />
+          </div>
+        ))}
       </div>
     );
   }
@@ -72,9 +81,18 @@ export function ProjectList({
       </div>
 
       <div className="space-y-3">
-        {results.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
+        {(() => {
+          let eligibleRank = 0;
+          return results.map((project) => {
+            const rank =
+              project.eligibilityStatus === 'eligible' && eligibleRank < 3
+                ? ++eligibleRank
+                : undefined;
+            return (
+              <ProjectCard key={project.id} project={project} rank={rank} />
+            );
+          });
+        })()}
       </div>
     </div>
   );

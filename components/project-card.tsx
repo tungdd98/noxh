@@ -49,9 +49,11 @@ function formatArea(min: number | null, max: number | null): string {
   return `${min}–${max}m²`;
 }
 
-type Props = { project: ProjectResult };
+const RANK_MEDALS = ['🥇', '🥈', '🥉'];
 
-export function ProjectCard({ project }: Props) {
+type Props = { project: ProjectResult; rank?: number };
+
+export function ProjectCard({ project, rank }: Props) {
   const eligibility = ELIGIBILITY_BADGE[project.eligibilityStatus];
   const statusCfg = STATUS_CONFIG[project.statusType];
   const isEligible = project.eligibilityStatus === 'eligible';
@@ -60,23 +62,30 @@ export function ProjectCard({ project }: Props) {
   return (
     <Card
       className={cn(
-        'relative overflow-hidden transition-opacity',
+        'overflow-hidden transition-opacity',
         !isEligible && 'opacity-75'
       )}
     >
-      {project.tag && (
-        <span className="bg-primary text-primary-foreground absolute top-3 right-3 rounded-full px-2 py-0.5 text-[10px] font-bold">
-          {project.tag}
-        </span>
-      )}
       <CardContent className="space-y-2 pt-4 pb-3">
-        <div className="flex items-start justify-between gap-2 pr-14">
-          <h3 className="text-sm leading-tight font-semibold">
-            {project.name}
-          </h3>
-          <Badge variant={eligibility.variant} className="shrink-0">
-            {eligibility.label}
-          </Badge>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 flex-1 items-start gap-2">
+            {rank && rank <= 3 && (
+              <span className="mt-px shrink-0 text-base leading-none">
+                {RANK_MEDALS[rank - 1]}
+              </span>
+            )}
+            <h3 className="text-sm leading-tight font-semibold">
+              {project.name}
+            </h3>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {project.tag && (
+              <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-[10px] font-bold">
+                {project.tag}
+              </span>
+            )}
+            <Badge variant={eligibility.variant}>{eligibility.label}</Badge>
+          </div>
         </div>
 
         <p className="text-muted-foreground text-xs">

@@ -109,7 +109,7 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
           value={form.provinceId}
           onValueChange={(v) => setForm((f) => ({ ...f, provinceId: v }))}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Chọn tỉnh thành..." />
           </SelectTrigger>
           <SelectContent>
@@ -129,7 +129,7 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
           value={form.category}
           onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Chọn đối tượng..." />
           </SelectTrigger>
           <SelectContent>

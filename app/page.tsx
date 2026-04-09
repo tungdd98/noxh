@@ -51,10 +51,10 @@ export default function NOXHPage() {
   }
 
   return (
-    <main className="bg-background text-foreground min-h-screen">
+    <main className="bg-background text-foreground flex h-screen flex-col overflow-hidden">
       {/* Header */}
-      <header className="border-b px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
+      <header className="shrink-0 border-b py-4">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6">
           <div>
             <h1 className="font-heading text-xl font-bold tracking-tight">
               Nhà Ở Xã Hội
@@ -74,10 +74,10 @@ export default function NOXHPage() {
       </header>
 
       {/* Body */}
-      <div className="mx-auto max-w-5xl px-6 py-6">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start">
+      <div className="flex-1 overflow-hidden">
+        <div className="mx-auto flex h-full max-w-5xl flex-col gap-6 px-6 py-6 md:flex-row md:items-start">
           {/* Left: Form */}
-          <aside className="w-full md:w-[340px] md:shrink-0">
+          <aside className="w-full shrink-0 md:w-85 md:overflow-y-auto">
             <div className="bg-muted/40 rounded-xl border p-5">
               <p className="text-muted-foreground mb-4 text-[11px] font-semibold tracking-[0.5px] uppercase">
                 Thông tin của bạn
@@ -96,8 +96,11 @@ export default function NOXHPage() {
             </div>
           </aside>
 
-          {/* Right: Results */}
-          <section ref={resultsRef} className="min-w-0 flex-1">
+          {/* Right: Results — scrollable */}
+          <section
+            ref={resultsRef}
+            className="min-w-0 flex-1 overflow-y-auto pb-6"
+          >
             <ProjectList
               results={results}
               hasChecked={hasChecked}
