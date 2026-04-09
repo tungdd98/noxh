@@ -202,11 +202,7 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
         </Label>
       </div>
 
-      <Button
-        type="submit"
-        className="w-full text-sm font-extrabold"
-        disabled={!isValid}
-      >
+      <Button type="submit" size="lg" disabled={!isValid} className="w-full">
         Kiểm tra điều kiện →
       </Button>
     </form>
