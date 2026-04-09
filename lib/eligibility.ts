@@ -32,17 +32,12 @@ export function checkEligibility(
     failures.push('wrong_category');
   if (project.restricted) failures.push('restricted');
 
-  const incomeToCheck =
-    userInfo.maritalStatus === 'married'
-      ? userInfo.income + (userInfo.spouseIncome ?? 0)
-      : userInfo.income;
-
   const incomeLimit =
     userInfo.maritalStatus === 'married'
       ? criteria.incomeLimit.married
-      : criteria.incomeLimit.single;
+      : project.incomeLimit;
 
-  if (incomeToCheck > incomeLimit) {
+  if (userInfo.income > incomeLimit) {
     failures.push('income_exceeded');
   }
 

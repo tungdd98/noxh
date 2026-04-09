@@ -1,7 +1,6 @@
 export type UserInfo = {
   income: number;
   maritalStatus: 'single' | 'married';
-  spouseIncome: number;
   provinceId: string;
   category: string;
   housingStatus: 'no_house' | 'small_house';

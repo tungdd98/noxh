@@ -24,7 +24,6 @@ type Props = {
 const DEFAULT_FORM: UserInfo = {
   income: 0,
   maritalStatus: 'single',
-  spouseIncome: 0,
   provinceId: '',
   category: '',
   housingStatus: 'no_house',
@@ -45,20 +44,7 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* 1. Thu nhập */}
-      <div className="space-y-1.5">
-        <Label htmlFor="income">Thu nhập hàng tháng</Label>
-        <CurrencyInput
-          id="income"
-          placeholder="VD: 12.000.000"
-          value={form.income || ''}
-          onChange={(val) =>
-            setForm((f) => ({ ...f, income: val === '' ? 0 : val }))
-          }
-        />
-      </div>
-
-      {/* 2. Hôn nhân */}
+      {/* 1. Hôn nhân */}
       <div className="space-y-1.5">
         <Label>Tình trạng hôn nhân</Label>
         <RadioGroup
@@ -67,7 +53,6 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
             setForm((f) => ({
               ...f,
               maritalStatus: v as 'single' | 'married',
-              spouseIncome: 0,
             }))
           }
           className="flex gap-4"
@@ -87,22 +72,25 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
         </RadioGroup>
       </div>
 
-      {/* 3. Thu nhập vợ/chồng (conditional) */}
-      {form.maritalStatus === 'married' && (
-        <div className="space-y-1.5">
-          <Label htmlFor="spouse-income">Thu nhập vợ/chồng</Label>
-          <CurrencyInput
-            id="spouse-income"
-            placeholder="VD: 10.000.000"
-            value={form.spouseIncome || ''}
-            onChange={(val) =>
-              setForm((f) => ({ ...f, spouseIncome: val === '' ? 0 : val }))
-            }
-          />
-        </div>
-      )}
+      {/* 2. Thu nhập */}
+      <div className="space-y-1.5">
+        <Label htmlFor="income">Thu nhập hàng tháng</Label>
+        <CurrencyInput
+          id="income"
+          placeholder="VD: 12.000.000"
+          value={form.income || ''}
+          onChange={(val) =>
+            setForm((f) => ({ ...f, income: val === '' ? 0 : val }))
+          }
+        />
+        {form.maritalStatus === 'married' && (
+          <p className="text-muted-foreground text-xs">
+            Nhập tổng thu nhập của cả 2 vợ chồng
+          </p>
+        )}
+      </div>
 
-      {/* 4. Tỉnh thành */}
+      {/* 3. Tỉnh thành */}
       <div className="space-y-1.5">
         <Label>Tỉnh / Thành phố muốn mua</Label>
         <Select

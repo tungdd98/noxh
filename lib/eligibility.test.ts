@@ -47,7 +47,6 @@ const baseProject: Project = {
 const baseUser: UserInfo = {
   income: 10000000,
   maritalStatus: 'single',
-  spouseIncome: 0,
   provinceId: 'hanoi',
   category: 'worker',
   housingStatus: 'no_house',
@@ -92,23 +91,21 @@ describe('checkEligibility', () => {
     expect(result.eligibilityStatus).toBe('income_exceeded');
   });
 
-  it('returns income_exceeded when married combined income exceeds criteria limit', () => {
+  it('returns income_exceeded when married combined income exceeds 50M limit', () => {
     const user: UserInfo = {
       ...baseUser,
       maritalStatus: 'married',
-      income: 24000000,
-      spouseIncome: 27000000,
+      income: 51000000,
     };
     const result = checkEligibility(user, baseProject, criteria);
     expect(result.eligibilityStatus).toBe('income_exceeded');
   });
 
-  it('is eligible when married and each person is under limit and combined is under 50M', () => {
+  it('is eligible when married and combined income is under 50M', () => {
     const user: UserInfo = {
       ...baseUser,
       maritalStatus: 'married',
-      income: 20000000,
-      spouseIncome: 20000000,
+      income: 40000000,
     };
     const result = checkEligibility(user, baseProject, criteria);
     expect(result.eligibilityStatus).toBe('eligible');
