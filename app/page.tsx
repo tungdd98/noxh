@@ -75,9 +75,9 @@ export default function NOXHPage() {
 
       {/* Body */}
       <div className="flex-1 overflow-hidden">
-        <div className="mx-auto flex h-full max-w-5xl flex-col gap-6 px-6 py-6 md:flex-row md:items-start">
+        <div className="mx-auto flex h-full max-w-5xl flex-col gap-6 px-6 py-6 md:flex-row">
           {/* Left: Form */}
-          <aside className="w-full shrink-0 md:w-85 md:overflow-y-auto">
+          <aside className="md:scrollbar-hide w-full shrink-0 md:w-85 md:overflow-y-auto">
             <div className="bg-muted/40 rounded-xl border p-5">
               <p className="text-muted-foreground mb-4 text-[11px] font-semibold tracking-[0.5px] uppercase">
                 Thông tin của bạn
@@ -99,7 +99,7 @@ export default function NOXHPage() {
           {/* Right: Results — scrollable */}
           <section
             ref={resultsRef}
-            className="min-w-0 flex-1 overflow-y-auto pb-6"
+            className="scrollbar-hide min-w-0 flex-1 overflow-y-auto pb-6"
           >
             <ProjectList
               results={results}
