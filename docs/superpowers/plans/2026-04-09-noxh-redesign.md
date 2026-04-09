@@ -66,8 +66,8 @@ Thay toàn bộ nội dung file:
   --color-success: var(--success);
   --color-warning: var(--warning);
 
-  --font-heading: var(--font-heading);
   --font-sans: var(--font-sans);
+  /* --font-heading intentionally removed — Plus Jakarta Sans serves both roles */
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -156,7 +156,7 @@ import './globals.css';
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-sans',
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: 'variable', // variable font — supports full 100–900 axis incl. font-black (900)
   display: 'swap',
 });
 
