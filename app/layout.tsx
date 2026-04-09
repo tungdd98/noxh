@@ -1,19 +1,12 @@
 import type { Metadata } from 'next';
-import { Be_Vietnam_Pro, Noto_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
-const beVietnamPro = Be_Vietnam_Pro({
-  variable: '--font-heading',
-  subsets: ['vietnamese', 'latin'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-});
-
-const notoSans = Noto_Sans({
+const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-sans',
-  subsets: ['vietnamese', 'latin'],
-  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
@@ -30,7 +23,7 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${beVietnamPro.variable} ${notoSans.variable} h-full antialiased`}
+      className={`${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         {children}

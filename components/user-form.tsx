@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
 import type { UserInfo, Criteria } from '@/types/noxh';
 
 type Props = {
@@ -30,6 +31,12 @@ const DEFAULT_FORM: UserInfo = {
   previouslyBought: false,
 };
 
+const INPUT_CLASS =
+  'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1';
+
+const SELECT_TRIGGER_CLASS =
+  'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto';
+
 export function UserForm({ criteria, initialValues, onSubmit }: Props) {
   const [form, setForm] = useState<UserInfo>(initialValues ?? DEFAULT_FORM);
 
@@ -44,37 +51,48 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* 1. Hôn nhân */}
       <div className="space-y-1.5">
-        <Label>Tình trạng hôn nhân</Label>
+        <Label className="text-foreground text-xs font-bold">
+          Tình trạng hôn nhân
+        </Label>
         <RadioGroup
           value={form.maritalStatus}
           onValueChange={(v) =>
-            setForm((f) => ({
-              ...f,
-              maritalStatus: v as 'single' | 'married',
-            }))
+            setForm((f) => ({ ...f, maritalStatus: v as 'single' | 'married' }))
           }
-          className="flex gap-4"
+          className="flex gap-2"
         >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="single" id="single" />
-            <Label htmlFor="single" className="cursor-pointer font-normal">
-              Độc thân
+          {(
+            [
+              { value: 'single', label: 'Độc thân' },
+              { value: 'married', label: 'Đã kết hôn' },
+            ] as const
+          ).map((opt) => (
+            <Label
+              key={opt.value}
+              htmlFor={opt.value}
+              className={cn(
+                'flex flex-1 cursor-pointer items-center justify-center rounded-[10px] border-2 px-3 py-2.5 text-sm font-bold transition-all',
+                form.maritalStatus === opt.value
+                  ? 'border-primary bg-primary text-primary-foreground shadow-[2px_2px_0_var(--border)]'
+                  : 'bg-input border-border text-foreground hover:bg-muted'
+              )}
+            >
+              <RadioGroupItem
+                value={opt.value}
+                id={opt.value}
+                className="sr-only"
+              />
+              {opt.label}
             </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="married" id="married" />
-            <Label htmlFor="married" className="cursor-pointer font-normal">
-              Đã kết hôn
-            </Label>
-          </div>
+          ))}
         </RadioGroup>
       </div>
 
-      {/* 2. Thu nhập */}
       <div className="space-y-1.5">
-        <Label htmlFor="income">Thu nhập hàng tháng</Label>
+        <Label className="text-foreground text-xs font-bold" htmlFor="income">
+          Thu nhập hàng tháng
+        </Label>
         <CurrencyInput
           id="income"
           placeholder="VD: 12.000.000"
@@ -82,6 +100,7 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
           onChange={(val) =>
             setForm((f) => ({ ...f, income: val === '' ? 0 : val }))
           }
+          className={INPUT_CLASS}
         />
         {form.maritalStatus === 'married' && (
           <p className="text-muted-foreground text-xs">
@@ -90,14 +109,15 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
         )}
       </div>
 
-      {/* 3. Tỉnh thành */}
       <div className="space-y-1.5">
-        <Label>Tỉnh / Thành phố muốn mua</Label>
+        <Label className="text-foreground text-xs font-bold">
+          Tỉnh / Thành phố muốn mua
+        </Label>
         <Select
           value={form.provinceId}
           onValueChange={(v) => setForm((f) => ({ ...f, provinceId: v }))}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className={SELECT_TRIGGER_CLASS}>
             <SelectValue placeholder="Chọn tỉnh thành..." />
           </SelectTrigger>
           <SelectContent>
@@ -110,14 +130,13 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
         </Select>
       </div>
 
-      {/* 5. Đối tượng */}
       <div className="space-y-1.5">
-        <Label>Đối tượng</Label>
+        <Label className="text-foreground text-xs font-bold">Đối tượng</Label>
         <Select
           value={form.category}
           onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className={SELECT_TRIGGER_CLASS}>
             <SelectValue placeholder="Chọn đối tượng..." />
           </SelectTrigger>
           <SelectContent>
@@ -130,9 +149,10 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
         </Select>
       </div>
 
-      {/* 6. Tình trạng nhà ở */}
       <div className="space-y-1.5">
-        <Label>Tình trạng nhà ở hiện tại</Label>
+        <Label className="text-foreground text-xs font-bold">
+          Tình trạng nhà ở hiện tại
+        </Label>
         <RadioGroup
           value={form.housingStatus}
           onValueChange={(v) =>
@@ -141,40 +161,52 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
               housingStatus: v as 'no_house' | 'small_house',
             }))
           }
-          className="space-y-2"
+          className="flex flex-col gap-2"
         >
           {criteria.housingConditions.map((c) => (
-            <div key={c.id} className="flex items-center gap-2">
-              <RadioGroupItem value={c.id} id={`housing-${c.id}`} />
-              <Label
-                htmlFor={`housing-${c.id}`}
-                className="cursor-pointer font-normal"
-              >
-                {c.label}
-              </Label>
-            </div>
+            <Label
+              key={c.id}
+              htmlFor={`housing-${c.id}`}
+              className={cn(
+                'flex w-full cursor-pointer items-center rounded-[10px] border-2 px-3.5 py-2.5 text-sm font-bold transition-all',
+                form.housingStatus === c.id
+                  ? 'border-primary bg-primary text-primary-foreground shadow-[2px_2px_0_var(--border)]'
+                  : 'bg-input border-border text-foreground hover:bg-muted'
+              )}
+            >
+              <RadioGroupItem
+                value={c.id}
+                id={`housing-${c.id}`}
+                className="sr-only"
+              />
+              {c.label}
+            </Label>
           ))}
         </RadioGroup>
       </div>
 
-      {/* 7. Đã từng mua NOXH */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5">
         <Checkbox
           id="previously-bought"
           checked={form.previouslyBought}
           onCheckedChange={(v) =>
             setForm((f) => ({ ...f, previouslyBought: Boolean(v) }))
           }
+          className="border-border border-2"
         />
         <Label
           htmlFor="previously-bought"
-          className="cursor-pointer font-normal"
+          className="text-foreground cursor-pointer text-sm font-medium"
         >
           Đã từng mua hoặc thuê nhà ở xã hội
         </Label>
       </div>
 
-      <Button type="submit" className="w-full" disabled={!isValid}>
+      <Button
+        type="submit"
+        className="w-full text-sm font-extrabold"
+        disabled={!isValid}
+      >
         Kiểm tra điều kiện →
       </Button>
     </form>

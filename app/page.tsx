@@ -36,6 +36,9 @@ export default function NOXHPage() {
         )
       : null;
 
+  const openCount = projects.filter((p) => p.statusType === 'open').length;
+  const provinceCount = new Set(projects.map((p) => p.province)).size;
+
   function handleSubmit(info: UserInfo) {
     setSubmittedInfo(info);
     try {
@@ -52,52 +55,89 @@ export default function NOXHPage() {
 
   return (
     <main className="bg-background text-foreground min-h-screen">
-      {/* Header */}
-      <header className="border-b py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6">
-          <div>
-            <h1 className="font-heading text-xl font-bold tracking-tight">
-              Nhà Ở Xã Hội
-            </h1>
-            <p className="text-muted-foreground mt-0.5 text-xs">
-              Tìm dự án phù hợp với điều kiện của bạn
-              {updatedAt &&
-                ` · Cập nhật ${new Date(updatedAt).toLocaleString('vi-VN')}`}
-            </p>
+      <header className="bg-background border-border sticky top-0 z-10 flex h-[60px] items-center justify-between border-b-2 px-6">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary border-border flex h-9 w-9 items-center justify-center rounded-[8px] border-2 text-lg shadow-[2px_2px_0_var(--border)]">
+            🏠
           </div>
-          {projects.length > 0 && (
-            <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
-              {projects.length} dự án
-            </span>
-          )}
+          <span className="text-foreground text-lg font-extrabold">
+            Nhà Ở Xã Hội
+          </span>
         </div>
+        {projects.length > 0 && (
+          <span className="border-primary bg-secondary text-secondary-foreground rounded-full border-[1.5px] px-3 py-1 text-xs font-bold">
+            {projects.length} dự án
+          </span>
+        )}
       </header>
 
-      {/* Body */}
-      <div className="mx-auto max-w-5xl px-6 py-6">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start">
-          {/* Left: Form — sticky */}
-          <aside className="w-full shrink-0 md:sticky md:top-6 md:w-85">
-            <div className="bg-muted/40 rounded-xl border p-5">
-              <p className="text-muted-foreground mb-4 text-[11px] font-semibold tracking-[0.5px] uppercase">
-                Thông tin của bạn
-              </p>
-              {criteria ? (
-                <UserForm
-                  criteria={criteria}
-                  initialValues={initialValues}
-                  onSubmit={handleSubmit}
-                />
-              ) : loading ? (
-                <p className="text-muted-foreground text-sm">Đang tải...</p>
-              ) : (
-                <p className="text-destructive text-sm">{error}</p>
+      <div className="bg-background border-border border-b-2 px-6 py-8">
+        <div className="mx-auto max-w-5xl">
+          {updatedAt && (
+            <div className="border-primary bg-secondary text-secondary-foreground mb-4 inline-flex items-center gap-2 rounded-full border-[1.5px] px-4 py-1.5 text-xs font-bold">
+              <span className="bg-primary h-2 w-2 rounded-full" />
+              Dữ liệu cập nhật {new Date(updatedAt).toLocaleDateString('vi-VN')}
+            </div>
+          )}
+          <h1 className="text-foreground mb-2 text-4xl leading-tight font-black md:text-5xl">
+            Tra cứu điều kiện mua{' '}
+            <span className="text-primary">nhà ở xã hội</span>
+          </h1>
+          <p className="text-muted-foreground mb-6 max-w-lg text-sm">
+            Nhập thông tin của bạn — hệ thống tự động lọc các dự án đủ điều kiện
+            tức thì.
+          </p>
+          {projects.length > 0 && (
+            <div className="flex gap-8">
+              <div>
+                <div className="text-foreground text-2xl font-black">
+                  {projects.length}
+                </div>
+                <div className="text-muted-foreground text-xs">Tổng dự án</div>
+              </div>
+              <div>
+                <div className="text-foreground text-2xl font-black">
+                  {openCount}
+                </div>
+                <div className="text-muted-foreground text-xs">
+                  Đang mở hồ sơ
+                </div>
+              </div>
+              {provinceCount > 0 && (
+                <div>
+                  <div className="text-foreground text-2xl font-black">
+                    {provinceCount}
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    Tỉnh thành
+                  </div>
+                </div>
               )}
             </div>
+          )}
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-5xl">
+        <div className="flex flex-col md:grid md:grid-cols-[300px_1fr]">
+          <aside className="border-border bg-card border-b-2 p-6 md:sticky md:top-[60px] md:h-[calc(100vh-60px)] md:overflow-y-auto md:border-r-2 md:border-b-0">
+            <p className="text-primary mb-5 text-[11px] font-extrabold tracking-widest uppercase">
+              Thông tin của bạn
+            </p>
+            {criteria ? (
+              <UserForm
+                criteria={criteria}
+                initialValues={initialValues}
+                onSubmit={handleSubmit}
+              />
+            ) : loading ? (
+              <p className="text-muted-foreground text-sm">Đang tải...</p>
+            ) : (
+              <p className="text-destructive text-sm">{error}</p>
+            )}
           </aside>
 
-          {/* Right: Results */}
-          <section ref={resultsRef} className="min-w-0 flex-1">
+          <section ref={resultsRef} className="min-w-0 p-6">
             <ProjectList
               results={results}
               hasChecked={hasChecked}

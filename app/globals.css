@@ -5,7 +5,6 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* shadcn semantic aliases → Tailwind color utilities */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -25,24 +24,20 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Brand scale → Tailwind: bg-brand-50, text-brand-500, ... */
-  --color-brand-50: var(--brand-50);
-  --color-brand-200: var(--brand-200);
-  --color-brand-400: var(--brand-400);
-  --color-brand-500: var(--brand-500);
-  --color-brand-600: var(--brand-600);
-  --color-brand-950: var(--brand-950);
-
-  /* Semantic app colors → Tailwind: text-success, bg-warning, ... */
   --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
   --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-destructive-bg: var(--destructive-bg);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted-border: var(--muted-border);
   --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-info-foreground: var(--info-foreground);
 
-  /* Typography */
   --font-heading: var(--font-heading);
   --font-sans: var(--font-sans);
 
-  /* Radius */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -51,42 +46,39 @@
 
 /* ─── Light Mode ─────────────────────────────────────── */
 :root {
-  /* Brand scale (Indigo) */
-  --brand-50: #eef2ff;
-  --brand-200: #c7d2fe;
-  --brand-400: #818cf8;
-  --brand-500: #6366f1;
-  --brand-600: #4f46e5;
-  --brand-950: #1e1b4b;
-
-  /* Semantic app colors */
-  --success: #059669;
-  --warning: #d97706;
-  --info: #0284c7;
-
-  /* shadcn semantic aliases */
-  --background: #ffffff;
-  --foreground: #1e1b4b;
+  --background: #faf6ee;
+  --foreground: #1a1a1a;
   --card: #ffffff;
-  --card-foreground: #1e1b4b;
+  --card-foreground: #1a1a1a;
   --popover: #ffffff;
-  --popover-foreground: #1e1b4b;
-  --primary: #6366f1;
+  --popover-foreground: #1a1a1a;
+  --primary: #16a34a;
   --primary-foreground: #ffffff;
-  --secondary: #eef2ff;
-  --secondary-foreground: #4338ca;
-  --muted: #f5f3ff;
-  --muted-foreground: #64748b;
-  --accent: #eef2ff;
-  --accent-foreground: #4338ca;
+  --secondary: #dcfce7;
+  --secondary-foreground: #15803d;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #dcfce7;
+  --accent-foreground: #15803d;
   --destructive: #dc2626;
-  --border: #e0e7ff;
-  --input: #e0e7ff;
-  --ring: #c7d2fe;
-  --radius: 0.5rem;
+  --border: #1a1a1a;
+  --input: #faf6ee;
+  --ring: #16a34a;
+  --radius: 10px;
+
+  --success: #16a34a;
+  --success-bg: #dcfce7;
+  --warning: #eab308;
+  --warning-bg: #fef9c3;
+  --destructive-bg: #fee2e2;
+  --destructive-foreground: #991b1b;
+  --muted-border: #e4e4e7;
+  --info: #0284c7;
+  --info-bg: #e0f2fe;
+  --info-foreground: #075985;
 }
 
-/* ─── Dark Mode ──────────────────────────────────────── */
+/* ─── Dark Mode (not active — no dark toggle in app) ─── */
 .dark {
   --background: #0f0e1a;
   --foreground: #e0e7ff;
@@ -94,23 +86,28 @@
   --card-foreground: #e0e7ff;
   --popover: #1a1830;
   --popover-foreground: #e0e7ff;
-  --primary: #818cf8;
-  --primary-foreground: #1e1b4b;
-  --secondary: #1a1830;
-  --secondary-foreground: #c7d2fe;
+  --primary: #22c55e;
+  --primary-foreground: #052e16;
+  --secondary: #14532d;
+  --secondary-foreground: #dcfce7;
   --muted: #1a1830;
   --muted-foreground: #818cf8;
-  --accent: #2d2b55;
-  --accent-foreground: #c7d2fe;
+  --accent: #14532d;
+  --accent-foreground: #dcfce7;
   --destructive: #f87171;
   --border: #2d2b55;
   --input: #2d2b55;
-  --ring: #4f46e5;
-
-  /* Semantic dark overrides */
-  --success: #34d399;
+  --ring: #16a34a;
+  --success: #22c55e;
+  --success-bg: #14532d;
   --warning: #fcd34d;
+  --warning-bg: #422006;
+  --destructive-bg: #450a0a;
+  --destructive-foreground: #fca5a5;
+  --muted-border: #3f3f46;
   --info: #38bdf8;
+  --info-bg: #0c4a6e;
+  --info-foreground: #bae6fd;
 }
 
 @layer base {
