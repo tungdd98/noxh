@@ -1,0 +1,28 @@
+{
+  "version": "2026-04-07",
+  "incomeLimit": {
+    "single": 25000000,
+    "married": 50000000
+  },
+  "eligibleCategories": [
+    { "id": "officer", "label": "Cán bộ, công chức, viên chức" },
+    { "id": "military", "label": "Sĩ quan, quân nhân chuyên nghiệp" },
+    { "id": "worker", "label": "Công nhân, người lao động" },
+    { "id": "poor", "label": "Hộ nghèo, cận nghèo đô thị" },
+    { "id": "low_income", "label": "Người thu nhập thấp" },
+    { "id": "contributor", "label": "Người có công với cách mạng" }
+  ],
+  "housingConditions": [
+    { "id": "no_house", "label": "Chưa có nhà ở" },
+    { "id": "small_house", "label": "Có nhà nhưng < 10m²/người" }
+  ],
+  "provinces": [
+    { "id": "hanoi", "label": "Hà Nội" },
+    { "id": "hcm", "label": "TP. Hồ Chí Minh" },
+    { "id": "danang", "label": "Đà Nẵng" },
+    { "id": "haiphong", "label": "Hải Phòng" },
+    { "id": "binhduong", "label": "Bình Dương" },
+    { "id": "dongnai", "label": "Đồng Nai" },
+    { "id": "longan", "label": "Long An" }
+  ]
+}
