@@ -70,6 +70,15 @@ n8n ghi đè `public/data/projects.json` theo lịch 6–8h/ngày. Frontend khô
   "housingConditions": [
     { "id": "no_house", "label": "Chưa có nhà ở" },
     { "id": "small_house", "label": "Có nhà nhưng < 10m²/người" }
+  ],
+  "provinces": [
+    { "id": "hanoi", "label": "Hà Nội" },
+    { "id": "hcm", "label": "TP. Hồ Chí Minh" },
+    { "id": "danang", "label": "Đà Nẵng" },
+    { "id": "haiphong", "label": "Hải Phòng" },
+    { "id": "binhduong", "label": "Bình Dương" },
+    { "id": "dongnai", "label": "Đồng Nai" },
+    { "id": "longan", "label": "Long An" }
   ]
 }
 ```
@@ -158,8 +167,11 @@ type ProjectResult = Project & {
 3. provinceId !== project.provinceId     → "wrong_province"
 4. category ∉ project.targetCategories  → "wrong_category"
 5. restricted === true                   → "restricted"
-6. totalIncome > project.incomeLimit     → "income_exceeded"
-   (totalIncome = income + spouseIncome nếu married, income nếu single)
+6. Kiểm tra thu nhập                     → "income_exceeded"
+   - Độc thân:  income > project.incomeLimit
+   - Kết hôn:   income > project.incomeLimit
+                HOẶC (income + spouseIncome) > criteria.incomeLimit.married
+   (project.incomeLimit là ngưỡng per-person, mặc định 25,000,000)
 7. Qua hết                               → "eligible"
 ```
 
