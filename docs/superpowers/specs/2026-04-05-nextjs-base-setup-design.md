@@ -1,7 +1,7 @@
 # Design Spec: Next.js Base Project Setup
 
 **Date:** 2026-04-05
-**Project:** finance-tracker (personal finance tracker)
+**Project:** noxh (personal finance tracker)
 **Scope:** Frontend base setup only — backend (Supabase) will be configured separately
 
 ---
@@ -15,7 +15,7 @@ Khởi tạo project Next.js từ đầu theo phương án manual từng bước
 ## 1. Khởi tạo Project
 
 ```bash
-npx create-next-app@latest finance-tracker
+npx create-next-app@latest noxh
 ```
 
 **Lựa chọn khi setup:**
@@ -33,7 +33,7 @@ npx create-next-app@latest finance-tracker
 ## 2. Cấu trúc thư mục
 
 ```
-finance-tracker/
+noxh/
 ├── app/                  # App Router pages & layouts
 │   ├── layout.tsx
 │   ├── page.tsx

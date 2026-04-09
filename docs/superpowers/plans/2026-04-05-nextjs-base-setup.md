@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Khởi tạo project Next.js 16 (latest) với đầy đủ tooling (Tailwind CSS, shadcn/ui, Prettier, ESLint, Husky, lint-staged, Commitlint) sẵn sàng cho phát triển frontend ứng dụng finance-tracker.
+**Goal:** Khởi tạo project Next.js 16 (latest) với đầy đủ tooling (Tailwind CSS, shadcn/ui, Prettier, ESLint, Husky, lint-staged, Commitlint) sẵn sàng cho phát triển frontend ứng dụng noxh.
 
 **Architecture:** Project dùng Next.js App Router, không có `src/` directory. Các tool chất lượng code (Prettier, ESLint) được tích hợp vào git workflow qua Husky + lint-staged, commit message được enforce bằng Commitlint theo chuẩn Conventional Commits.
 
@@ -13,7 +13,7 @@
 ## File Structure
 
 ```
-finance-tracker/
+noxh/
 ├── app/
 │   ├── layout.tsx          # Root layout
 │   ├── page.tsx            # Home page
@@ -45,7 +45,7 @@ finance-tracker/
 - [ ] **Step 1: Đảm bảo đang ở nhánh main và branch sạch**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 git checkout main
 git status
 ```
@@ -74,14 +74,14 @@ Expected: thấy `* feat/nextjs-base-setup`
 
 **Files:**
 
-- Create: `finance-tracker/` (toàn bộ project từ create-next-app)
+- Create: `noxh/` (toàn bộ project từ create-next-app)
 
-> **Lưu ý:** Task này chạy trong thư mục cha của `finance-tracker/` (tức `/Users/mac/Desktop/`), vì `create-next-app` sẽ tạo thư mục `finance-tracker/` mới. Nhưng vì thư mục đã tồn tại với `.git/` và `docs/`, ta cần chạy lệnh bên trong thư mục đó.
+> **Lưu ý:** Task này chạy trong thư mục cha của `noxh/` (tức `/Users/mac/Desktop/`), vì `create-next-app` sẽ tạo thư mục `noxh/` mới. Nhưng vì thư mục đã tồn tại với `.git/` và `docs/`, ta cần chạy lệnh bên trong thư mục đó.
 
 - [ ] **Step 1: Chạy create-next-app bên trong thư mục hiện có**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npx create-next-app@latest . \
   --typescript \
   --eslint \
@@ -102,13 +102,13 @@ Expected output:
 ✔ Would you like to use ESLint? … Yes
 ✔ Would you like to use Tailwind CSS? … Yes
 ...
-Success! Created finance-tracker
+Success! Created noxh
 ```
 
 - [ ] **Step 2: Xác nhận các file đã được tạo**
 
 ```bash
-ls /Users/mac/Desktop/finance-tracker
+ls /Users/mac/Desktop/noxh
 ```
 
 Expected: thấy `app/`, `components/` (hoặc không có - tùy version), `public/`, `package.json`, `next.config.ts`, `tailwind.config.ts`, `tsconfig.json`, `eslint.config.mjs`
@@ -116,7 +116,7 @@ Expected: thấy `app/`, `components/` (hoặc không có - tùy version), `publ
 - [ ] **Step 3: Cài dependencies**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker && npm install
+cd /Users/mac/Desktop/noxh && npm install
 ```
 
 Expected: `added N packages` không có error.
@@ -124,15 +124,15 @@ Expected: `added N packages` không có error.
 - [ ] **Step 4: Tạo các thư mục còn thiếu**
 
 ```bash
-mkdir -p /Users/mac/Desktop/finance-tracker/components/ui
-mkdir -p /Users/mac/Desktop/finance-tracker/hooks
-mkdir -p /Users/mac/Desktop/finance-tracker/types
+mkdir -p /Users/mac/Desktop/noxh/components/ui
+mkdir -p /Users/mac/Desktop/noxh/hooks
+mkdir -p /Users/mac/Desktop/noxh/types
 ```
 
 - [ ] **Step 5: Kiểm tra dev server chạy được**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker && npm run dev &
+cd /Users/mac/Desktop/noxh && npm run dev &
 sleep 5 && curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
 ```
 
@@ -145,7 +145,7 @@ kill %1
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 git add .
 git commit -m "chore: initialize Next.js 15 project with TypeScript, Tailwind, App Router"
 ```
@@ -165,7 +165,7 @@ git commit -m "chore: initialize Next.js 15 project with TypeScript, Tailwind, A
 - [ ] **Step 1: Chạy shadcn init**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npx shadcn@latest init
 ```
 
@@ -178,7 +178,7 @@ Khi được hỏi, chọn:
 - [ ] **Step 2: Xác nhận components.json được tạo**
 
 ```bash
-cat /Users/mac/Desktop/finance-tracker/components.json
+cat /Users/mac/Desktop/noxh/components.json
 ```
 
 Expected: file JSON có `style: "new-york"`, `tailwind.cssVariables: true`
@@ -186,7 +186,7 @@ Expected: file JSON có `style: "new-york"`, `tailwind.cssVariables: true`
 - [ ] **Step 3: Xác nhận lib/utils.ts có hàm cn()**
 
 ```bash
-cat /Users/mac/Desktop/finance-tracker/lib/utils.ts
+cat /Users/mac/Desktop/noxh/lib/utils.ts
 ```
 
 Expected: file chứa hàm `cn()` dùng `clsx` và `tailwind-merge`.
@@ -194,7 +194,7 @@ Expected: file chứa hàm `cn()` dùng `clsx` và `tailwind-merge`.
 - [ ] **Step 4: Thêm một component test để xác nhận shadcn hoạt động**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npx shadcn@latest add button
 ```
 
@@ -203,7 +203,7 @@ Expected: tạo file `components/ui/button.tsx`
 - [ ] **Step 5: Xác nhận button component tồn tại**
 
 ```bash
-ls /Users/mac/Desktop/finance-tracker/components/ui/
+ls /Users/mac/Desktop/noxh/components/ui/
 ```
 
 Expected: thấy `button.tsx`
@@ -211,7 +211,7 @@ Expected: thấy `button.tsx`
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 git add .
 git commit -m "chore: add shadcn/ui with New York style and Neutral base color"
 ```
@@ -229,7 +229,7 @@ git commit -m "chore: add shadcn/ui with New York style and Neutral base color"
 - [ ] **Step 1: Cài Prettier và plugin Tailwind**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npm install -D prettier prettier-plugin-tailwindcss
 ```
 
@@ -237,7 +237,7 @@ Expected: `added N packages`
 
 - [ ] **Step 2: Tạo file .prettierrc**
 
-Tạo file `/Users/mac/Desktop/finance-tracker/.prettierrc` với nội dung:
+Tạo file `/Users/mac/Desktop/noxh/.prettierrc` với nội dung:
 
 ```json
 {
@@ -251,7 +251,7 @@ Tạo file `/Users/mac/Desktop/finance-tracker/.prettierrc` với nội dung:
 
 - [ ] **Step 3: Tạo file .prettierignore**
 
-Tạo file `/Users/mac/Desktop/finance-tracker/.prettierignore` với nội dung:
+Tạo file `/Users/mac/Desktop/noxh/.prettierignore` với nội dung:
 
 ```
 .next
@@ -273,7 +273,7 @@ Trong `package.json`, thêm vào `scripts`:
 - [ ] **Step 5: Chạy thử Prettier**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker && npm run format
+cd /Users/mac/Desktop/noxh && npm run format
 ```
 
 Expected: danh sách file được format, không có error.
@@ -281,7 +281,7 @@ Expected: danh sách file được format, không có error.
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 git add .
 git commit -m "chore: add Prettier with tailwindcss plugin"
 ```
@@ -297,7 +297,7 @@ git commit -m "chore: add Prettier with tailwindcss plugin"
 - [ ] **Step 1: Cài eslint-config-prettier**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npm install -D eslint-config-prettier
 ```
 
@@ -329,7 +329,7 @@ export default eslintConfig;
 - [ ] **Step 3: Kiểm tra ESLint chạy được**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker && npx eslint . --max-warnings=0
+cd /Users/mac/Desktop/noxh && npx eslint . --max-warnings=0
 ```
 
 Expected: không có error (chỉ có thể có warnings từ Next.js defaults).
@@ -337,7 +337,7 @@ Expected: không có error (chỉ có thể có warnings từ Next.js defaults).
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 git add .
 git commit -m "chore: integrate eslint-config-prettier to avoid conflicts"
 ```
@@ -354,14 +354,14 @@ git commit -m "chore: integrate eslint-config-prettier to avoid conflicts"
 - [ ] **Step 1: Cài Husky và lint-staged**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npm install -D husky lint-staged
 ```
 
 - [ ] **Step 2: Khởi tạo Husky**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npx husky init
 ```
 
@@ -396,7 +396,7 @@ Thêm key `"lint-staged"` vào `package.json` (ngang cấp với `"scripts"`):
 - [ ] **Step 5: Test pre-commit hook thủ công**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npx lint-staged
 ```
 
@@ -405,7 +405,7 @@ Expected: chạy qua tất cả staged files (hoặc báo "No staged files match
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 git add .
 git commit -m "chore: add Husky and lint-staged for pre-commit hooks"
 ```
@@ -422,13 +422,13 @@ git commit -m "chore: add Husky and lint-staged for pre-commit hooks"
 - [ ] **Step 1: Cài Commitlint**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npm install -D @commitlint/cli @commitlint/config-conventional
 ```
 
 - [ ] **Step 2: Tạo commitlint.config.js**
 
-Tạo file `/Users/mac/Desktop/finance-tracker/commitlint.config.js`:
+Tạo file `/Users/mac/Desktop/noxh/commitlint.config.js`:
 
 ```js
 export default {
@@ -438,7 +438,7 @@ export default {
 
 - [ ] **Step 3: Tạo commit-msg hook**
 
-Tạo file `/Users/mac/Desktop/finance-tracker/.husky/commit-msg`:
+Tạo file `/Users/mac/Desktop/noxh/.husky/commit-msg`:
 
 ```bash
 npx --no -- commitlint --edit $1
@@ -447,13 +447,13 @@ npx --no -- commitlint --edit $1
 - [ ] **Step 4: Đảm bảo file có quyền thực thi**
 
 ```bash
-chmod +x /Users/mac/Desktop/finance-tracker/.husky/commit-msg
+chmod +x /Users/mac/Desktop/noxh/.husky/commit-msg
 ```
 
 - [ ] **Step 5: Test commitlint với commit message hợp lệ**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 echo "feat: test commitlint" | npx commitlint
 ```
 
@@ -462,7 +462,7 @@ Expected: không có output lỗi (exit code 0).
 - [ ] **Step 6: Test commitlint với commit message không hợp lệ**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 echo "bad commit message" | npx commitlint
 ```
 
@@ -471,7 +471,7 @@ Expected: lỗi như `✖ subject may not be empty` hoặc `type may not be empt
 - [ ] **Step 7: Commit**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 git add .
 git commit -m "chore: add commitlint with conventional commits config"
 ```
@@ -501,7 +501,7 @@ export default function Home() {
 - [ ] **Step 2: Chạy toàn bộ check**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 npm run format:check && npx eslint . && npx tsc --noEmit
 ```
 
@@ -510,7 +510,7 @@ Expected: tất cả pass, không có error.
 - [ ] **Step 3: Build thử production**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker && npm run build
+cd /Users/mac/Desktop/noxh && npm run build
 ```
 
 Expected: `✓ Compiled successfully` hoặc `Route (app)` table, không có error.
@@ -518,7 +518,7 @@ Expected: `✓ Compiled successfully` hoặc `Route (app)` table, không có err
 - [ ] **Step 4: Commit cuối**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker
+cd /Users/mac/Desktop/noxh
 git add .
 git commit -m "chore: simplify home page placeholder, verify full toolchain"
 ```
@@ -526,7 +526,7 @@ git commit -m "chore: simplify home page placeholder, verify full toolchain"
 - [ ] **Step 5: Xem git log để xác nhận toàn bộ commit history**
 
 ```bash
-cd /Users/mac/Desktop/finance-tracker && git log --oneline
+cd /Users/mac/Desktop/noxh && git log --oneline
 ```
 
 Expected: thấy tất cả các commit từ Task 1 đến Task 7 theo thứ tự.
