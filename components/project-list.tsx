@@ -1,5 +1,35 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { ProjectCard } from '@/components/project-card';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import type { ProjectResult } from '@/types/noxh';
+
+const PAGE_SIZE = 10;
+
+function buildPageNumbers(current: number, total: number): (number | '...')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | '...')[] = [1];
+  if (current > 3) pages.push('...');
+  for (
+    let i = Math.max(2, current - 1);
+    i <= Math.min(total - 1, current + 1);
+    i++
+  ) {
+    pages.push(i);
+  }
+  if (current < total - 2) pages.push('...');
+  pages.push(total);
+  return pages;
+}
 
 type Props = {
   results: ProjectResult[];
@@ -16,6 +46,12 @@ export function ProjectList({
   error,
   updatedAt,
 }: Props) {
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [results]);
+
   if (loading) {
     return (
       <div className="space-y-3">
@@ -76,6 +112,22 @@ export function ProjectList({
   ).length;
   const ineligibleCount = results.length - eligibleCount;
 
+  // Pre-compute ranks over the full array before slicing
+  const rankedResults = (() => {
+    let eligibleRank = 0;
+    return results.map((project) => ({
+      project,
+      rank:
+        project.eligibilityStatus === 'eligible' && eligibleRank < 3
+          ? ++eligibleRank
+          : undefined,
+    }));
+  })();
+
+  const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
+  const startIndex = (page - 1) * PAGE_SIZE;
+  const pageItems = rankedResults.slice(startIndex, startIndex + PAGE_SIZE);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -97,19 +149,45 @@ export function ProjectList({
       </div>
 
       <div className="space-y-3">
-        {(() => {
-          let eligibleRank = 0;
-          return results.map((project) => {
-            const rank =
-              project.eligibilityStatus === 'eligible' && eligibleRank < 3
-                ? ++eligibleRank
-                : undefined;
-            return (
-              <ProjectCard key={project.id} project={project} rank={rank} />
-            );
-          });
-        })()}
+        {pageItems.map(({ project, rank }) => (
+          <ProjectCard key={project.id} project={project} rank={rank} />
+        ))}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+              />
+            </PaginationItem>
+
+            {buildPageNumbers(page, totalPages).map((n, i) => (
+              <PaginationItem key={n === '...' ? `gap-${i}` : n}>
+                {n === '...' ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    isActive={page === n}
+                    onClick={() => setPage(n as number)}
+                  >
+                    {n}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }
