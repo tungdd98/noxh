@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { buttonVariants, type Button } from '@/components/ui/button';
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   return (
@@ -39,8 +38,8 @@ function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
 
 type PaginationLinkProps = {
   isActive?: boolean;
-} & Pick<React.ComponentProps<typeof Button>, 'size'> &
-  React.ComponentProps<'a'>;
+  size?: 'icon' | 'default';
+} & React.ComponentProps<'a'>;
 
 function PaginationLink({
   className,
@@ -54,10 +53,11 @@ function PaginationLink({
       data-slot="pagination-link"
       data-active={isActive}
       className={cn(
-        buttonVariants({
-          variant: isActive ? 'outline' : 'ghost',
-          size,
-        }),
+        'border-border inline-flex items-center justify-center rounded-md border-2 text-sm font-bold transition-all',
+        size === 'icon' ? 'size-9' : 'h-9 gap-1.5 px-3',
+        isActive
+          ? 'bg-primary text-primary-foreground shadow-[2px_2px_0_var(--border)]'
+          : 'bg-card text-foreground hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--border)]',
         className
       )}
       {...props}
@@ -73,11 +73,11 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn('gap-1 px-2.5 sm:pl-2.5', className)}
+      className={cn('font-extrabold', className)}
       {...props}
     >
-      <ChevronLeftIcon />
-      <span className="hidden sm:block">Previous</span>
+      <ChevronLeftIcon className="size-4" />
+      <span className="hidden sm:block">Trước</span>
     </PaginationLink>
   );
 }
@@ -90,11 +90,11 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn('gap-1 px-2.5 sm:pr-2.5', className)}
+      className={cn('font-extrabold', className)}
       {...props}
     >
-      <span className="hidden sm:block">Next</span>
-      <ChevronRightIcon />
+      <span className="hidden sm:block">Sau</span>
+      <ChevronRightIcon className="size-4" />
     </PaginationLink>
   );
 }
