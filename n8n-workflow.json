@@ -1,0 +1,233 @@
+{
+  "name": "NOXH Data Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [0, 0],
+      "id": "b60bfde6-2968-4d6a-ae14-98790fd7c207",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://vnexpress.net/rss/bat-dong-san.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [208, 0],
+      "id": "cc2c096f-7836-430a-a428-37ac78b876c7",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9146b62c-4a6f-49c0-b717-fcdcb01d1d9b",
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "/(nhà ở xã hội|noxh|thu nhập thấp|nhà ở công nhân|nhà giá rẻ|nhà ở xã hội)/i",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [416, 0],
+      "id": "cfa3a70a-0f46-4be7-a47a-2b1b7486af75",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [624, 0],
+      "id": "97e10a91-19fc-42e3-9e6f-dd344d3945ea",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "content",
+              "cssSelector": ".fck_detail"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [832, 0],
+      "id": "a320f68b-d005-4b79-8ba6-3ed3e5b5259a",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "claude-haiku-4-5-20251001"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Role: Chuyên gia trích xuất dữ liệu bất động sản.\nTask: Phân tích nội dung bài báo.\n1. Xác định đây có phải bài báo giới thiệu một dự án NOXH cụ thể (có tên dự án) hay không? Điền vào trường \"is_project\".\n2. Nếu là dự án, trích xuất thông tin. Nếu không, để các trường khác là null.\n\nConstraint: \n- CHỈ trả về JSON thuần túy. \n- KHÔNG sử dụng định dạng Markdown (KHÔNG có dấu ```json).\n- KHÔNG kèm lời giải thích.\n\nJSON Schema:\n{\n  \"is_project\": boolean,\n  \"name\": \"Tên dự án\",\n  \"investor\": \"Tên công ty chủ đầu tư\",\n  \"district\": \"Quận/Huyện\",\n  \"province\": \"Tỉnh/Thành phố\",\n  \"price\": số,\n  \"minArea\": số,\n  \"maxArea\": số,\n  \"totalUnits\": số,\n  \"status\": \"Tình trạng\",\n  \"notes\": \"1 câu tóm tắt\"\n}\n\nDữ liệu:  {{ $json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [1040, 0],
+      "id": "6abf5818-34f3-45ff-8463-540ba9add200",
+      "name": "Message a model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "EXw3a4GmHziF9cmt",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const processedItems = [];\n\nfor (const item of $input.all()) {\n  const rawText = item.json.content[0].text;\n  \n  // 1. Làm sạch Markdown (xóa ```json và ```) trước khi Parse\n  const cleanText = rawText.replace(/```json|```/g, \"\").trim();\n\n  try {\n    const data = JSON.parse(cleanText);\n\n    // 2. Chỉ lấy những item là dự án thực sự\n    if (data.is_project === true) {\n      \n      // 3. Chuẩn hóa dữ liệu để khớp với projects.json của bạn\n      const formattedData = {\n        id: Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 1000), // Tạo ID ngẫu nhiên\n        name: data.name,\n        investor: data.investor,\n        district: data.district,\n        provinceId: data.province?.toLowerCase()\n                        .normalize(\"NFD\")\n                        .replace(/[\\u0300-\\u036f]/g, \"\")\n                        .replace(/\\s+/g, '') || \"unknown\",\n        province: data.province,\n        price: data.price > 1000000 ? Math.round(data.price / 1000000) : data.price, // Đổi từ 31.400.000 về 31 triệu nếu cần\n        minArea: data.minArea,\n        maxArea: data.maxArea,\n        totalUnits: data.totalUnits,\n        status: data.status,\n        statusType: \"open\",\n        notes: data.notes,\n        updatedAt: new Date().toISOString()\n      };\n\n      processedItems.push({ json: formattedData });\n    }\n  } catch (error) {\n    // Nếu có lỗi parse JSON ở 1 item, bỏ qua và chạy tiếp item sau\n    console.error(\"Lỗi parse JSON tại item:\", error);\n  }\n}\n\n// 4. Trả về toàn bộ danh sách dự án đã lọc sạch\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1392, 0],
+      "id": "b6d35fac-fd4a-4b54-a70e-991dbcfbc949",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Lấy dữ liệu mới trực tiếp từ đầu vào của node này\nconst newProjects = $input.all().map(item => item.json);\n\n// 2. Lấy dữ liệu cũ từ node GitHub Get\n// CỰC KỲ QUAN TRỌNG: 'GitHub Get' phải khớp y hệt tên node trên màn hình của bạn\nconst githubData = $('GitHub Get').item.json; \nconst oldContentBase64 = githubData.content;\nconst fileSha = githubData.sha; \n\nlet existingProjects = [];\n\ntry {\n    // Giải mã Base64 sang JSON\n    const decodedString = Buffer.from(oldContentBase64, 'base64').toString('utf-8');\n    existingProjects = JSON.parse(decodedString);\n} catch (e) {\n    // Nếu file trống hoặc lỗi, bắt đầu với mảng rỗng\n    existingProjects = [];\n}\n\n// 3. Gộp và lọc trùng theo tên dự án\nconst merged = [...newProjects];\n\nexistingProjects.forEach(oldP => {\n    // Chỉ thêm lại dự án cũ nếu tên chưa có trong danh sách mới\n    const isDuplicate = merged.some(newP => newP.name === oldP.name);\n    if (!isDuplicate) {\n        merged.push(oldP);\n    }\n});\n\n// 4. Sắp xếp lại: Tin mới nhất lên đầu\nmerged.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));\n\n// 5. Trả về kết quả cuối kèm SHA cho node GitHub Edit\nreturn {\n    final_content: JSON.stringify(merged, null, 2),\n    sha: fileSha\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 0],
+      "id": "cdb9e09f-f8bc-402d-a356-de49357b580c",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0514dac7-9ebd-4f94-b75b-659379222110",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e1b4a5db6c46725ca3c1ec60152c9aed5459f40c0499749f548b33c7b8c2cf3"
+  },
+  "id": "JZnXX1pgVtYzlalv",
+  "tags": []
+}

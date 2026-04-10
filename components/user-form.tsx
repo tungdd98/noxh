@@ -32,10 +32,10 @@ const DEFAULT_FORM: UserInfo = {
 };
 
 const INPUT_CLASS =
-  'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1';
+  'h-auto w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1';
 
 const SELECT_TRIGGER_CLASS =
-  'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto';
+  'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto data-[size=default]:h-auto';
 
 export function UserForm({ criteria, initialValues, onSubmit }: Props) {
   const [form, setForm] = useState<UserInfo>(initialValues ?? DEFAULT_FORM);
