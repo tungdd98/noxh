@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 import type { Project, Criteria } from '@/types/noxh';
 
 type UseProjectsResult = {
@@ -21,15 +22,16 @@ export function useProjects(): UseProjectsResult {
       try {
         const [criteriaRes, projectsRes] = await Promise.all([
           fetch('/data/criteria.json', { cache: 'no-store' }),
-          fetch('/data/projects.json', { cache: 'no-store' }),
+          supabase
+            .from('projects')
+            .select('*')
+            .order('score', { ascending: false }),
         ]);
-        if (!criteriaRes.ok || !projectsRes.ok) throw new Error('Fetch failed');
-        const [criteriaData, projectsData] = await Promise.all([
-          criteriaRes.json() as Promise<Criteria>,
-          projectsRes.json() as Promise<Project[]>,
-        ]);
+        if (!criteriaRes.ok) throw new Error('Criteria fetch failed');
+        if (projectsRes.error) throw projectsRes.error;
+        const criteriaData = (await criteriaRes.json()) as Criteria;
         setCriteria(criteriaData);
-        setProjects(projectsData);
+        setProjects(projectsRes.data as Project[]);
       } catch {
         setError('Không thể tải dữ liệu dự án. Vui lòng thử lại.');
       } finally {
