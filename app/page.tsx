@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useRef } from 'react';
 import { useProjects } from '@/hooks/use-projects';
 import { useEligibility } from '@/hooks/use-eligibility';

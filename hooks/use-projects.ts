@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Project, Criteria, UserInfo } from '@/types/noxh';
 
-export const PAGE_SIZE = 10;
+export const PAGE_SIZE = 5;
 
 type UseProjectsResult = {
   projects: Project[];
@@ -40,6 +40,7 @@ export function useProjects(
   useEffect(() => {
     if (!userInfo) return;
 
+    const info = userInfo;
     let cancelled = false;
     const from = (page - 1) * PAGE_SIZE;
 
@@ -53,8 +54,8 @@ export function useProjects(
         } = await supabase
           .from('projects')
           .select('*', { count: 'exact' })
-          .eq('provinceId', userInfo.provinceId)
-          .contains('targetCategories', [userInfo.category])
+          .eq('provinceId', info.provinceId)
+          .contains('targetCategories', [info.category])
           .order('score', { ascending: false })
           .range(from, from + PAGE_SIZE - 1);
 
