@@ -5,9 +5,17 @@ import { useProjects } from '@/hooks/use-projects';
 import { UserForm } from '@/components/user-form';
 import { ProjectList } from '@/components/project-list';
 
+const PAGE_SIZE = 10;
+
 export default function NOXHPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { projects, totalCount, loading, error } = useProjects(currentPage);
+  const { projects, loading, error } = useProjects();
+
+  const totalCount = projects.length;
+  const pagedProjects = projects.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   function handlePageChange(page: number) {
     setCurrentPage(page);
@@ -54,12 +62,13 @@ export default function NOXHPage() {
 
           <section className="min-w-0 p-6">
             <ProjectList
-              projects={projects}
+              projects={pagedProjects}
               totalCount={totalCount}
               currentPage={currentPage}
               loading={loading}
               error={error}
               onPageChange={handlePageChange}
+              pageSize={PAGE_SIZE}
             />
           </section>
         </div>
