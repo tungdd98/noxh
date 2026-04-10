@@ -4,11 +4,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Project } from '@/types/noxh';
 
-const PAGE_SIZE = 10;
-
 type UseProjectsResult = {
   projects: Project[];
-  totalCount: number;
   loading: boolean;
   error: string | null;
 };
@@ -16,12 +13,18 @@ type UseProjectsResult = {
 type DbRow = {
   id: number;
   title: string;
-  address: string | null;
-  capacity: string | null;
   status: string | null;
+  price: string | null;
+  handover: string | null;
+  address: string | null;
   owner: string | null;
-  url: string | null;
+  apply_time: string | null;
+  scale: string | null;
+  area: string | null;
+  density: string | null;
+  maintenance: string | null;
   image_url: string | null;
+  url: string | null;
   scraped_at: string | null;
 };
 
@@ -29,19 +32,24 @@ function toProject(row: DbRow): Project {
   return {
     id: row.id,
     title: row.title,
-    address: row.address,
-    capacity: row.capacity,
     status: row.status,
+    price: row.price,
+    handover: row.handover,
+    address: row.address,
     owner: row.owner,
-    url: row.url,
+    applyTime: row.apply_time,
+    scale: row.scale,
+    area: row.area,
+    density: row.density,
+    maintenance: row.maintenance,
     imageUrl: row.image_url,
+    url: row.url,
     scrapedAt: row.scraped_at,
   };
 }
 
-export function useProjects(page: number): UseProjectsResult {
+export function useProjects(): UseProjectsResult {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,28 +60,18 @@ export function useProjects(page: number): UseProjectsResult {
       setLoading(true);
       setError(null);
 
-      const from = (page - 1) * PAGE_SIZE;
-      const to = page * PAGE_SIZE - 1;
-
-      const {
-        data,
-        error: dbError,
-        count,
-      } = await supabase
+      const { data, error: dbError } = await supabase
         .from('projects')
-        .select('*', { count: 'exact' })
-        .order('id')
-        .range(from, to);
+        .select('*')
+        .order('id');
 
       if (cancelled) return;
 
       if (dbError) {
         setError('Không thể tải dữ liệu dự án. Vui lòng thử lại.');
         setProjects([]);
-        setTotalCount(0);
       } else {
         setProjects((data as DbRow[]).map(toProject));
-        setTotalCount(count ?? 0);
       }
 
       setLoading(false);
@@ -83,7 +81,7 @@ export function useProjects(page: number): UseProjectsResult {
     return () => {
       cancelled = true;
     };
-  }, [page]);
+  }, []);
 
-  return { projects, totalCount, loading, error };
+  return { projects, loading, error };
 }

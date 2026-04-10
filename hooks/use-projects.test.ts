@@ -14,91 +14,84 @@ const mockProjects: Project[] = [
   {
     id: 1,
     title: 'Tân Lập Garden',
-    address: 'Tân Lập, Ô Diên, Hà Nội',
-    capacity: '459 căn',
     status: 'Đang thi công',
+    price: '20 triệu/m²',
+    handover: 'Quý IV/2027',
+    address: 'Tân Lập, Ô Diên, Hà Nội',
     owner: 'Cienco 5',
-    url: 'https://example.com',
+    applyTime: 'Đợt 1: 30/04/2026 - 15/05/2026',
+    scale:
+      'CT1 - 230 căn - 0 căn thương mại\nCT2 - 137 căn - 92 căn thương mại',
+    area: '4.909 m²',
+    density: '40%',
+    maintenance: '400.000 vnđ/m²',
     imageUrl: 'https://example.com/img.jpg',
+    url: 'https://example.com',
     scrapedAt: '2026-04-10T10:15:24.165Z',
   },
 ];
 
-const mockDbRows = mockProjects.map((p) => ({
-  id: p.id,
-  title: p.title,
-  address: p.address,
-  capacity: p.capacity,
-  status: p.status,
-  owner: p.owner,
-  url: p.url,
-  image_url: p.imageUrl,
-  scraped_at: p.scrapedAt,
-}));
+const mockDbRows = [
+  {
+    id: 1,
+    title: 'Tân Lập Garden',
+    status: 'Đang thi công',
+    price: '20 triệu/m²',
+    handover: 'Quý IV/2027',
+    address: 'Tân Lập, Ô Diên, Hà Nội',
+    owner: 'Cienco 5',
+    apply_time: 'Đợt 1: 30/04/2026 - 15/05/2026',
+    scale:
+      'CT1 - 230 căn - 0 căn thương mại\nCT2 - 137 căn - 92 căn thương mại',
+    area: '4.909 m²',
+    density: '40%',
+    maintenance: '400.000 vnđ/m²',
+    image_url: 'https://example.com/img.jpg',
+    url: 'https://example.com',
+    scraped_at: '2026-04-10T10:15:24.165Z',
+  },
+];
 
-function mockSupabase(
-  data: typeof mockDbRows | null,
-  error: Error | null,
-  count: number | null
-) {
+function mockSupabase(data: typeof mockDbRows | null, error: Error | null) {
   vi.mocked(supabase.from).mockReturnValue({
     select: vi.fn().mockReturnValue({
-      order: vi.fn().mockReturnValue({
-        range: vi.fn().mockResolvedValue({ data, error, count }),
-      }),
+      order: vi.fn().mockResolvedValue({ data, error }),
     }),
   } as unknown as ReturnType<typeof supabase.from>);
 }
 
 beforeEach(() => {
-  mockSupabase(mockDbRows, null, 1);
+  mockSupabase(mockDbRows, null);
 });
 
 describe('useProjects', () => {
   it('starts with loading state', () => {
-    const { result } = renderHook(() => useProjects(1));
+    const { result } = renderHook(() => useProjects());
     expect(result.current.loading).toBe(true);
     expect(result.current.projects).toEqual([]);
-    expect(result.current.totalCount).toBe(0);
   });
 
-  it('loads projects and maps snake_case to camelCase', async () => {
-    const { result } = renderHook(() => useProjects(1));
+  it('loads all projects and maps snake_case to camelCase', async () => {
+    const { result } = renderHook(() => useProjects());
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.projects).toHaveLength(1);
-    expect(result.current.projects[0].title).toBe('Tân Lập Garden');
+    expect(result.current.projects[0]).toEqual(mockProjects[0]);
+  });
+
+  it('maps apply_time → applyTime and image_url → imageUrl', async () => {
+    const { result } = renderHook(() => useProjects());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.projects[0].applyTime).toBe(
+      'Đợt 1: 30/04/2026 - 15/05/2026'
+    );
     expect(result.current.projects[0].imageUrl).toBe(
       'https://example.com/img.jpg'
     );
-    expect(result.current.projects[0].scrapedAt).toBe(
-      '2026-04-10T10:15:24.165Z'
-    );
-    expect(result.current.totalCount).toBe(1);
-    expect(result.current.error).toBeNull();
   });
 
-  it('calls range with correct offsets for page 1', async () => {
-    const { result } = renderHook(() => useProjects(1));
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    const rangeMock = vi.mocked(
-      supabase.from('projects').select('*', { count: 'exact' }).order('id')
-    ).range;
-    expect(rangeMock).toHaveBeenCalledWith(0, 9);
-  });
-
-  it('calls range with correct offsets for page 2', async () => {
-    mockSupabase(mockDbRows, null, 15);
-    const { result } = renderHook(() => useProjects(2));
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    const rangeMock = vi.mocked(
-      supabase.from('projects').select('*', { count: 'exact' }).order('id')
-    ).range;
-    expect(rangeMock).toHaveBeenCalledWith(10, 19);
-  });
-
-  it('sets error when Supabase returns error', async () => {
-    mockSupabase(null, new Error('DB error'), null);
-    const { result } = renderHook(() => useProjects(1));
+  it('sets error message when Supabase returns error', async () => {
+    mockSupabase(null, new Error('DB error'));
+    const { result } = renderHook(() => useProjects());
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.error).toBe(
       'Không thể tải dữ liệu dự án. Vui lòng thử lại.'
