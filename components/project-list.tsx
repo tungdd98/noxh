@@ -1,5 +1,31 @@
 import { ProjectCard } from '@/components/project-card';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import { PAGE_SIZE } from '@/hooks/use-projects';
 import type { ProjectResult } from '@/types/noxh';
+
+function buildPageNumbers(current: number, total: number): (number | '...')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | '...')[] = [1];
+  if (current > 3) pages.push('...');
+  for (
+    let i = Math.max(2, current - 1);
+    i <= Math.min(total - 1, current + 1);
+    i++
+  ) {
+    pages.push(i);
+  }
+  if (current < total - 2) pages.push('...');
+  pages.push(total);
+  return pages;
+}
 
 type Props = {
   results: ProjectResult[];
@@ -7,6 +33,9 @@ type Props = {
   loading: boolean;
   error: string | null;
   updatedAt: string | null;
+  page: number;
+  setPage: (page: number) => void;
+  totalCount: number;
 };
 
 export function ProjectList({
@@ -15,6 +44,9 @@ export function ProjectList({
   loading,
   error,
   updatedAt,
+  page,
+  setPage,
+  totalCount,
 }: Props) {
   if (loading) {
     return (
@@ -76,11 +108,16 @@ export function ProjectList({
   ).length;
   const ineligibleCount = results.length - eligibleCount;
 
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  // Assign medals to top 3 eligible on the current page
+  let eligibleRank = 0;
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-muted-foreground text-[11px] font-extrabold tracking-widest uppercase">
-          {results.length} dự án
+          {totalCount} dự án
         </p>
         <div className="flex gap-2">
           {eligibleCount > 0 && (
@@ -97,19 +134,49 @@ export function ProjectList({
       </div>
 
       <div className="space-y-3">
-        {(() => {
-          let eligibleRank = 0;
-          return results.map((project) => {
-            const rank =
-              project.eligibilityStatus === 'eligible' && eligibleRank < 3
-                ? ++eligibleRank
-                : undefined;
-            return (
-              <ProjectCard key={project.id} project={project} rank={rank} />
-            );
-          });
-        })()}
+        {results.map((project) => {
+          const rank =
+            project.eligibilityStatus === 'eligible' && eligibleRank < 3
+              ? ++eligibleRank
+              : undefined;
+          return <ProjectCard key={project.id} project={project} rank={rank} />;
+        })}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1}
+              />
+            </PaginationItem>
+
+            {buildPageNumbers(page, totalPages).map((n, i) => (
+              <PaginationItem key={n === '...' ? `gap-${i}` : n}>
+                {n === '...' ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    isActive={page === n}
+                    onClick={() => setPage(n as number)}
+                  >
+                    {n}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setPage(Math.min(totalPages, page + 1))}
+                disabled={page === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }

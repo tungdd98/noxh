@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useRef } from 'react';
 import { useProjects } from '@/hooks/use-projects';
 import { useEligibility } from '@/hooks/use-eligibility';
@@ -20,11 +22,15 @@ function readStoredUserInfo(): UserInfo | null {
 }
 
 export default function NOXHPage() {
-  const { projects, criteria, loading, error } = useProjects();
   const [submittedInfo, setSubmittedInfo] = useState<UserInfo | null>(null);
   const [initialValues] = useState<UserInfo | null>(readStoredUserInfo);
+  const [page, setPage] = useState(1);
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  const { projects, criteria, loading, error, totalCount } = useProjects(
+    submittedInfo,
+    page
+  );
   const results = useEligibility(submittedInfo, projects, criteria);
   const hasChecked = submittedInfo !== null;
 
@@ -36,10 +42,8 @@ export default function NOXHPage() {
         )
       : null;
 
-  const openCount = projects.filter((p) => p.statusType === 'open').length;
-  const provinceCount = new Set(projects.map((p) => p.province)).size;
-
   function handleSubmit(info: UserInfo) {
+    setPage(1);
     setSubmittedInfo(info);
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(info));
@@ -64,9 +68,9 @@ export default function NOXHPage() {
             Nhà Ở Xã Hội
           </span>
         </div>
-        {projects.length > 0 && (
+        {totalCount > 0 && (
           <span className="border-primary bg-secondary text-secondary-foreground rounded-full border-[1.5px] px-3 py-1 text-xs font-bold">
-            {projects.length} dự án
+            {totalCount} dự án
           </span>
         )}
       </header>
@@ -87,34 +91,6 @@ export default function NOXHPage() {
             Nhập thông tin của bạn — hệ thống tự động lọc các dự án đủ điều kiện
             tức thì.
           </p>
-          {projects.length > 0 && (
-            <div className="flex gap-8">
-              <div>
-                <div className="text-foreground text-2xl font-black">
-                  {projects.length}
-                </div>
-                <div className="text-muted-foreground text-xs">Tổng dự án</div>
-              </div>
-              <div>
-                <div className="text-foreground text-2xl font-black">
-                  {openCount}
-                </div>
-                <div className="text-muted-foreground text-xs">
-                  Đang mở hồ sơ
-                </div>
-              </div>
-              {provinceCount > 0 && (
-                <div>
-                  <div className="text-foreground text-2xl font-black">
-                    {provinceCount}
-                  </div>
-                  <div className="text-muted-foreground text-xs">
-                    Tỉnh thành
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
@@ -144,6 +120,9 @@ export default function NOXHPage() {
               loading={loading}
               error={error}
               updatedAt={updatedAt}
+              page={page}
+              setPage={setPage}
+              totalCount={totalCount}
             />
           </section>
         </div>

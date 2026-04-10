@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useProjects } from '@/hooks/use-projects';
 import { supabase } from '@/lib/supabase';
-import type { Criteria, Project } from '@/types/noxh';
+import type { Criteria, Project, UserInfo } from '@/types/noxh';
 
 vi.mock('@/lib/supabase', () => ({
   supabase: {
@@ -49,8 +49,32 @@ const mockProjects: Project[] = [
   },
 ];
 
+const mockUserInfo: UserInfo = {
+  maritalStatus: 'single',
+  income: 15000000,
+  provinceId: 'hanoi',
+  category: 'worker',
+  housingStatus: 'no_house',
+  previouslyBought: false,
+};
+
+function mockSupabaseChain(result: {
+  data: Project[] | null;
+  error: Error | null;
+  count: number | null;
+}) {
+  vi.mocked(supabase.from).mockReturnValue({
+    select: vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnThis(),
+      contains: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnValue({
+        range: vi.fn().mockResolvedValue(result),
+      }),
+    }),
+  } as unknown as ReturnType<typeof supabase.from>);
+}
+
 beforeEach(() => {
-  // Criteria vẫn fetch từ JSON file
   vi.stubGlobal(
     'fetch',
     vi.fn((url: string) => {
@@ -64,42 +88,43 @@ beforeEach(() => {
     })
   );
 
-  // Projects từ Supabase
-  vi.mocked(supabase.from).mockReturnValue({
-    select: vi.fn().mockReturnValue({
-      order: vi.fn().mockResolvedValue({ data: mockProjects, error: null }),
-    }),
-  } as unknown as ReturnType<typeof supabase.from>);
+  mockSupabaseChain({ data: mockProjects, error: null, count: 1 });
 });
 
 describe('useProjects', () => {
   it('starts with loading state', () => {
-    const { result } = renderHook(() => useProjects());
+    const { result } = renderHook(() => useProjects(null, 1));
     expect(result.current.loading).toBe(true);
     expect(result.current.projects).toEqual([]);
     expect(result.current.criteria).toBeNull();
   });
 
-  it('loads projects and criteria', async () => {
-    const { result } = renderHook(() => useProjects());
+  it('loads criteria on mount without userInfo', async () => {
+    const { result } = renderHook(() => useProjects(null, 1));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.criteria?.version).toBe('2026-04-07');
+    expect(result.current.projects).toEqual([]);
+    expect(result.current.totalCount).toBe(0);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('loads projects when userInfo is provided', async () => {
+    const { result } = renderHook(() => useProjects(mockUserInfo, 1));
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.projects).toHaveLength(1);
     expect(result.current.projects[0].name).toBe('Test Project');
     expect(result.current.projects[0].slug).toBe('test-project');
-    expect(result.current.criteria?.version).toBe('2026-04-07');
+    expect(result.current.totalCount).toBe(1);
     expect(result.current.error).toBeNull();
   });
 
   it('sets error when Supabase returns error', async () => {
-    vi.mocked(supabase.from).mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        order: vi.fn().mockResolvedValue({
-          data: null,
-          error: new Error('DB error'),
-        }),
-      }),
-    } as unknown as ReturnType<typeof supabase.from>);
-    const { result } = renderHook(() => useProjects());
+    mockSupabaseChain({
+      data: null,
+      error: new Error('DB error'),
+      count: null,
+    });
+    const { result } = renderHook(() => useProjects(mockUserInfo, 1));
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.error).toBe(
       'Không thể tải dữ liệu dự án. Vui lòng thử lại.'
@@ -112,7 +137,7 @@ describe('useProjects', () => {
       'fetch',
       vi.fn(() => Promise.reject(new Error('Network error')))
     );
-    const { result } = renderHook(() => useProjects());
+    const { result } = renderHook(() => useProjects(null, 1));
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.error).toBe(
       'Không thể tải dữ liệu dự án. Vui lòng thử lại.'
