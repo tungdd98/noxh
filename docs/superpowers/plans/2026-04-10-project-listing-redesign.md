@@ -14,6 +14,8 @@
 
 | File                                  | Action | Trách nhiệm                                                   |
 | ------------------------------------- | ------ | ------------------------------------------------------------- |
+| Supabase SQL (dashboard)              | Run    | Alter table, xoá dữ liệu cũ, thêm cột mới                     |
+| `scripts/seed.ts`                     | Modify | Cập nhật theo schema mới, seed lại dữ liệu từ data.json       |
 | `types/noxh.ts`                       | Modify | Xoá type cũ, định nghĩa `Project` mới theo schema data.json   |
 | `lib/project-utils.ts`                | Create | Helper `parseTotalUnits` — parse tổng số căn từ field `scale` |
 | `lib/project-utils.test.ts`           | Create | Tests cho `parseTotalUnits`                                   |
@@ -24,6 +26,126 @@
 | `components/project-detail-modal.tsx` | Create | Modal chi tiết dự án dùng Dialog                              |
 | `components/project-list.tsx`         | Modify | Thêm `selectedProject` state, render modal                    |
 | `app/page.tsx`                        | Modify | Chuyển FE pagination logic lên đây, bỏ `page` từ hook         |
+
+---
+
+## Task 0: Update Supabase DB schema + seed
+
+**Files:**
+
+- Run SQL in Supabase dashboard
+- Modify: `scripts/seed.ts`
+
+- [ ] **Step 1: Chạy SQL migration trong Supabase dashboard**
+
+Vào Supabase dashboard → SQL Editor, chạy đoạn SQL sau:
+
+```sql
+-- Xoá cột cũ
+ALTER TABLE projects DROP COLUMN IF EXISTS capacity;
+
+-- Thêm cột mới
+ALTER TABLE projects
+  ADD COLUMN IF NOT EXISTS price TEXT,
+  ADD COLUMN IF NOT EXISTS handover TEXT,
+  ADD COLUMN IF NOT EXISTS apply_time TEXT,
+  ADD COLUMN IF NOT EXISTS scale TEXT,
+  ADD COLUMN IF NOT EXISTS area TEXT,
+  ADD COLUMN IF NOT EXISTS density TEXT,
+  ADD COLUMN IF NOT EXISTS maintenance TEXT;
+
+-- Xoá toàn bộ dữ liệu cũ
+DELETE FROM projects;
+```
+
+- [ ] **Step 2: Cập nhật `scripts/seed.ts`**
+
+Thay toàn bộ nội dung file:
+
+```ts
+import { createClient } from '@supabase/supabase-js';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
+
+async function main() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!url || !key) {
+    console.error(
+      'Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY'
+    );
+    process.exit(1);
+  }
+
+  const supabase = createClient(url, key);
+
+  type RawProject = {
+    title: string;
+    status: string;
+    price: string;
+    handover: string;
+    address: string;
+    owner: string;
+    applyTime: string;
+    scale: string;
+    area: string;
+    density: string;
+    maintenance: string;
+    imageUrl: string;
+    url: string;
+    scrapedAt: string;
+  };
+
+  const raw = readFileSync(resolve(process.cwd(), 'data.json'), 'utf-8');
+  const projects: RawProject[] = JSON.parse(raw);
+
+  const rows = projects.map((p) => ({
+    title: p.title,
+    status: p.status ?? null,
+    price: p.price ?? null,
+    handover: p.handover ?? null,
+    address: p.address ?? null,
+    owner: p.owner ?? null,
+    apply_time: p.applyTime ?? null,
+    scale: p.scale ?? null,
+    area: p.area ?? null,
+    density: p.density ?? null,
+    maintenance: p.maintenance ?? null,
+    image_url: p.imageUrl ?? null,
+    url: p.url ?? null,
+    scraped_at: p.scrapedAt ?? null,
+  }));
+
+  const { error, count } = await supabase
+    .from('projects')
+    .insert(rows, { count: 'exact' });
+
+  if (error) {
+    console.error('Insert failed:', error.message);
+    process.exit(1);
+  }
+
+  console.log(`Seeded ${count} projects successfully.`);
+}
+
+main();
+```
+
+- [ ] **Step 3: Chạy seed script**
+
+```bash
+npx tsx scripts/seed.ts
+```
+
+Expected output: `Seeded 21 projects successfully.`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add scripts/seed.ts
+git commit -m "feat: update seed script to new schema"
+```
 
 ---
 
