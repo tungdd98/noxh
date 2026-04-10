@@ -28,7 +28,7 @@ export function ProjectList({
   loading,
   error,
   onPageChange,
-}: Props) {
+}: Readonly<Props>) {
   if (loading) {
     return (
       <div className="space-y-3">
@@ -37,7 +37,7 @@ export function ProjectList({
             key={i}
             className="border-border bg-card flex animate-pulse overflow-hidden rounded-[14px] border-2 shadow-[3px_3px_0_var(--border)]"
           >
-            <div className="bg-muted h-[90px] w-[120px] shrink-0" />
+            <div className="bg-muted aspect-square w-40 shrink-0" />
             <div className="flex-1 p-3">
               <div className="bg-muted mb-2 h-4 w-3/5 rounded-md" />
               <div className="bg-muted mb-3 h-3 w-2/5 rounded" />
@@ -64,7 +64,7 @@ export function ProjectList({
 
   return (
     <div className="space-y-4">
-      <p className="text-muted-foreground text-[11px] font-extrabold tracking-widest uppercase">
+      <p className="text-muted-foreground text-xs font-extrabold tracking-widest uppercase">
         {totalCount} dự án
       </p>
 

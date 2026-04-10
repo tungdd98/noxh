@@ -16,7 +16,7 @@ export default function NOXHPage() {
 
   return (
     <main className="bg-background text-foreground min-h-screen">
-      <header className="bg-background border-border sticky top-0 z-10 flex h-[60px] items-center justify-between border-b-2 px-6">
+      <header className="bg-background border-border sticky top-0 z-10 flex h-15 items-center justify-between border-b-2 px-6">
         <div className="flex items-center gap-3">
           <div className="bg-primary border-border flex h-9 w-9 items-center justify-center rounded-[8px] border-2 text-lg shadow-[2px_2px_0_var(--border)]">
             🏠
@@ -45,8 +45,8 @@ export default function NOXHPage() {
 
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-col md:grid md:grid-cols-[300px_1fr]">
-          <aside className="border-border bg-card border-b-2 p-6 md:sticky md:top-[60px] md:h-[calc(100vh-60px)] md:overflow-y-auto md:border-r-2 md:border-b-0">
-            <p className="text-primary mb-5 text-[11px] font-extrabold tracking-widest uppercase">
+          <aside className="border-border bg-card border-b-2 p-6 md:sticky md:top-15 md:h-[calc(100vh-60px)] md:overflow-y-auto md:border-r-2 md:border-b-0">
+            <p className="text-primary mb-5 text-xs font-extrabold tracking-widest uppercase">
               Thông tin của bạn
             </p>
             <UserForm onSubmit={() => {}} />
