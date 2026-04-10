@@ -1,6 +1,3 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import { ProjectCard } from '@/components/project-card';
 import {
   Pagination,
@@ -11,9 +8,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { PAGE_SIZE } from '@/hooks/use-projects';
 import type { ProjectResult } from '@/types/noxh';
-
-const PAGE_SIZE = 10;
 
 function buildPageNumbers(current: number, total: number): (number | '...')[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
@@ -37,6 +33,9 @@ type Props = {
   loading: boolean;
   error: string | null;
   updatedAt: string | null;
+  page: number;
+  setPage: (page: number) => void;
+  totalCount: number;
 };
 
 export function ProjectList({
@@ -45,13 +44,10 @@ export function ProjectList({
   loading,
   error,
   updatedAt,
+  page,
+  setPage,
+  totalCount,
 }: Props) {
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    setPage(1);
-  }, [results]);
-
   if (loading) {
     return (
       <div className="space-y-3">
@@ -112,27 +108,16 @@ export function ProjectList({
   ).length;
   const ineligibleCount = results.length - eligibleCount;
 
-  // Pre-compute ranks over the full array before slicing
-  const rankedResults = (() => {
-    let eligibleRank = 0;
-    return results.map((project) => ({
-      project,
-      rank:
-        project.eligibilityStatus === 'eligible' && eligibleRank < 3
-          ? ++eligibleRank
-          : undefined,
-    }));
-  })();
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-  const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
-  const startIndex = (page - 1) * PAGE_SIZE;
-  const pageItems = rankedResults.slice(startIndex, startIndex + PAGE_SIZE);
+  // Assign medals to top 3 eligible on the current page
+  let eligibleRank = 0;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-muted-foreground text-[11px] font-extrabold tracking-widest uppercase">
-          {results.length} dự án
+          {totalCount} dự án
         </p>
         <div className="flex gap-2">
           {eligibleCount > 0 && (
@@ -149,9 +134,13 @@ export function ProjectList({
       </div>
 
       <div className="space-y-3">
-        {pageItems.map(({ project, rank }) => (
-          <ProjectCard key={project.id} project={project} rank={rank} />
-        ))}
+        {results.map((project) => {
+          const rank =
+            project.eligibilityStatus === 'eligible' && eligibleRank < 3
+              ? ++eligibleRank
+              : undefined;
+          return <ProjectCard key={project.id} project={project} rank={rank} />;
+        })}
       </div>
 
       {totalPages > 1 && (
@@ -159,7 +148,7 @@ export function ProjectList({
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
               />
             </PaginationItem>
@@ -181,7 +170,7 @@ export function ProjectList({
 
             <PaginationItem>
               <PaginationNext
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() => setPage(Math.min(totalPages, page + 1))}
                 disabled={page === totalPages}
               />
             </PaginationItem>
