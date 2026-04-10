@@ -17,12 +17,18 @@ async function main() {
 
   type RawProject = {
     title: string;
-    address: string;
-    capacity: string;
     status: string;
+    price: string;
+    handover: string;
+    address: string;
     owner: string;
-    url: string;
+    applyTime: string;
+    scale: string;
+    area: string;
+    density: string;
+    maintenance: string;
     imageUrl: string;
+    url: string;
     scrapedAt: string;
   };
 
@@ -31,12 +37,18 @@ async function main() {
 
   const rows = projects.map((p) => ({
     title: p.title,
-    address: p.address ?? null,
-    capacity: p.capacity ?? null,
     status: p.status ?? null,
+    price: p.price ?? null,
+    handover: p.handover ?? null,
+    address: p.address ?? null,
     owner: p.owner ?? null,
-    url: p.url ?? null,
+    apply_time: p.applyTime ?? null,
+    scale: p.scale ?? null,
+    area: p.area ?? null,
+    density: p.density ?? null,
+    maintenance: p.maintenance ?? null,
     image_url: p.imageUrl ?? null,
+    url: p.url ?? null,
     scraped_at: p.scrapedAt ?? null,
   }));
 
