@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useProjects } from '@/hooks/use-projects';
 import { supabase } from '@/lib/supabase';
-import type { Criteria, Project } from '@/types/noxh';
+import type { Project } from '@/types/noxh';
 
 vi.mock('@/lib/supabase', () => ({
   supabase: {
@@ -10,109 +10,95 @@ vi.mock('@/lib/supabase', () => ({
   },
 }));
 
-const mockCriteria: Criteria = {
-  version: '2026-04-07',
-  incomeLimit: { single: 25000000, married: 50000000 },
-  eligibleCategories: [{ id: 'worker', label: 'Công nhân' }],
-  housingConditions: [{ id: 'no_house', label: 'Chưa có nhà' }],
-  provinces: [{ id: 'hanoi', label: 'Hà Nội' }],
-};
-
 const mockProjects: Project[] = [
   {
     id: 1,
-    name: 'Test Project',
-    investor: 'Test',
-    district: 'Test',
-    provinceId: 'hanoi',
-    province: 'Hà Nội',
-    price: 25,
-    minArea: 45,
-    maxArea: 70,
-    minPrice: 1000,
-    maxPrice: 1500,
-    totalUnits: 100,
-    status: 'Đang mở',
-    statusType: 'open',
-    handover: 'Q4/2027',
-    priority: 'Công nhân',
-    targetCategories: ['worker'],
-    incomeLimit: 25000000,
-    restricted: false,
-    quality: 'Good',
-    notes: '',
-    score: 80,
-    highlight: false,
-    tag: null,
-    updatedAt: '2026-04-09T00:00:00Z',
-    slug: 'test-project',
+    title: 'Tân Lập Garden',
+    address: 'Tân Lập, Ô Diên, Hà Nội',
+    capacity: '459 căn',
+    status: 'Đang thi công',
+    owner: 'Cienco 5',
+    url: 'https://example.com',
+    imageUrl: 'https://example.com/img.jpg',
+    scrapedAt: '2026-04-10T10:15:24.165Z',
   },
 ];
 
-beforeEach(() => {
-  // Criteria vẫn fetch từ JSON file
-  vi.stubGlobal(
-    'fetch',
-    vi.fn((url: string) => {
-      if ((url as string).includes('criteria.json')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockCriteria),
-        });
-      }
-      return Promise.reject(new Error('Unknown URL'));
-    })
-  );
+const mockDbRows = mockProjects.map((p) => ({
+  id: p.id,
+  title: p.title,
+  address: p.address,
+  capacity: p.capacity,
+  status: p.status,
+  owner: p.owner,
+  url: p.url,
+  image_url: p.imageUrl,
+  scraped_at: p.scrapedAt,
+}));
 
-  // Projects từ Supabase
+function mockSupabase(
+  data: typeof mockDbRows | null,
+  error: Error | null,
+  count: number | null
+) {
   vi.mocked(supabase.from).mockReturnValue({
     select: vi.fn().mockReturnValue({
-      order: vi.fn().mockResolvedValue({ data: mockProjects, error: null }),
+      order: vi.fn().mockReturnValue({
+        range: vi.fn().mockResolvedValue({ data, error, count }),
+      }),
     }),
   } as unknown as ReturnType<typeof supabase.from>);
+}
+
+beforeEach(() => {
+  mockSupabase(mockDbRows, null, 1);
 });
 
 describe('useProjects', () => {
   it('starts with loading state', () => {
-    const { result } = renderHook(() => useProjects());
+    const { result } = renderHook(() => useProjects(1));
     expect(result.current.loading).toBe(true);
     expect(result.current.projects).toEqual([]);
-    expect(result.current.criteria).toBeNull();
+    expect(result.current.totalCount).toBe(0);
   });
 
-  it('loads projects and criteria', async () => {
-    const { result } = renderHook(() => useProjects());
+  it('loads projects and maps snake_case to camelCase', async () => {
+    const { result } = renderHook(() => useProjects(1));
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.projects).toHaveLength(1);
-    expect(result.current.projects[0].name).toBe('Test Project');
-    expect(result.current.projects[0].slug).toBe('test-project');
-    expect(result.current.criteria?.version).toBe('2026-04-07');
+    expect(result.current.projects[0].title).toBe('Tân Lập Garden');
+    expect(result.current.projects[0].imageUrl).toBe(
+      'https://example.com/img.jpg'
+    );
+    expect(result.current.projects[0].scrapedAt).toBe(
+      '2026-04-10T10:15:24.165Z'
+    );
+    expect(result.current.totalCount).toBe(1);
     expect(result.current.error).toBeNull();
   });
 
-  it('sets error when Supabase returns error', async () => {
-    vi.mocked(supabase.from).mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        order: vi.fn().mockResolvedValue({
-          data: null,
-          error: new Error('DB error'),
-        }),
-      }),
-    } as unknown as ReturnType<typeof supabase.from>);
-    const { result } = renderHook(() => useProjects());
+  it('calls range with correct offsets for page 1', async () => {
+    const { result } = renderHook(() => useProjects(1));
     await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.error).toBe(
-      'Không thể tải dữ liệu dự án. Vui lòng thử lại.'
-    );
-    expect(result.current.projects).toEqual([]);
+    const rangeMock = vi.mocked(
+      supabase.from('projects').select('*', { count: 'exact' }).order('id')
+    ).range;
+    expect(rangeMock).toHaveBeenCalledWith(0, 9);
   });
 
-  it('sets error when criteria fetch fails', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.reject(new Error('Network error')))
-    );
-    const { result } = renderHook(() => useProjects());
+  it('calls range with correct offsets for page 2', async () => {
+    mockSupabase(mockDbRows, null, 15);
+    const { result } = renderHook(() => useProjects(2));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    const rangeMock = vi.mocked(
+      supabase.from('projects').select('*', { count: 'exact' }).order('id')
+    ).range;
+    expect(rangeMock).toHaveBeenCalledWith(10, 19);
+  });
+
+  it('sets error when Supabase returns error', async () => {
+    mockSupabase(null, new Error('DB error'), null);
+    const { result } = renderHook(() => useProjects(1));
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.error).toBe(
       'Không thể tải dữ liệu dự án. Vui lòng thử lại.'

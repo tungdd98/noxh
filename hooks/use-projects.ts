@@ -2,44 +2,88 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { Project, Criteria } from '@/types/noxh';
+import type { Project } from '@/types/noxh';
+
+const PAGE_SIZE = 10;
 
 type UseProjectsResult = {
   projects: Project[];
-  criteria: Criteria | null;
+  totalCount: number;
   loading: boolean;
   error: string | null;
 };
 
-export function useProjects(): UseProjectsResult {
+type DbRow = {
+  id: number;
+  title: string;
+  address: string | null;
+  capacity: string | null;
+  status: string | null;
+  owner: string | null;
+  url: string | null;
+  image_url: string | null;
+  scraped_at: string | null;
+};
+
+function toProject(row: DbRow): Project {
+  return {
+    id: row.id,
+    title: row.title,
+    address: row.address,
+    capacity: row.capacity,
+    status: row.status,
+    owner: row.owner,
+    url: row.url,
+    imageUrl: row.image_url,
+    scrapedAt: row.scraped_at,
+  };
+}
+
+export function useProjects(page: number): UseProjectsResult {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [criteria, setCriteria] = useState<Criteria | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [criteriaRes, projectsRes] = await Promise.all([
-          fetch('/data/criteria.json', { cache: 'no-store' }),
-          supabase
-            .from('projects')
-            .select('*')
-            .order('score', { ascending: false }),
-        ]);
-        if (!criteriaRes.ok) throw new Error('Criteria fetch failed');
-        if (projectsRes.error) throw projectsRes.error;
-        const criteriaData = (await criteriaRes.json()) as Criteria;
-        setCriteria(criteriaData);
-        setProjects(projectsRes.data as Project[]);
-      } catch {
-        setError('Không thể tải dữ liệu dự án. Vui lòng thử lại.');
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
+    let cancelled = false;
 
-  return { projects, criteria, loading, error };
+    async function load() {
+      setLoading(true);
+      setError(null);
+
+      const from = (page - 1) * PAGE_SIZE;
+      const to = page * PAGE_SIZE - 1;
+
+      const {
+        data,
+        error: dbError,
+        count,
+      } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact' })
+        .order('id')
+        .range(from, to);
+
+      if (cancelled) return;
+
+      if (dbError) {
+        setError('Không thể tải dữ liệu dự án. Vui lòng thử lại.');
+        setProjects([]);
+        setTotalCount(0);
+      } else {
+        setProjects((data as DbRow[]).map(toProject));
+        setTotalCount(count ?? 0);
+      }
+
+      setLoading(false);
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [page]);
+
+  return { projects, totalCount, loading, error };
 }

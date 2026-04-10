@@ -14,11 +14,9 @@ import {
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import type { UserInfo, Criteria } from '@/types/noxh';
+import type { UserInfo } from '@/types/noxh';
 
 type Props = {
-  criteria: Criteria;
-  initialValues: UserInfo | null;
   onSubmit: (info: UserInfo) => void;
 };
 
@@ -37,8 +35,8 @@ const INPUT_CLASS =
 const SELECT_TRIGGER_CLASS =
   'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto data-[size=default]:h-auto';
 
-export function UserForm({ criteria, initialValues, onSubmit }: Props) {
-  const [form, setForm] = useState<UserInfo>(initialValues ?? DEFAULT_FORM);
+export function UserForm({ onSubmit }: Props) {
+  const [form, setForm] = useState<UserInfo>(DEFAULT_FORM);
 
   const isValid =
     form.income > 0 && form.provinceId !== '' && form.category !== '';
@@ -121,7 +119,7 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
             <SelectValue placeholder="Chọn tỉnh thành..." />
           </SelectTrigger>
           <SelectContent>
-            {criteria.provinces.map((p) => (
+            {([] as { id: string; label: string }[]).map((p) => (
               <SelectItem key={p.id} value={p.id}>
                 {p.label}
               </SelectItem>
@@ -140,7 +138,7 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
             <SelectValue placeholder="Chọn đối tượng..." />
           </SelectTrigger>
           <SelectContent>
-            {criteria.eligibleCategories.map((c) => (
+            {([] as { id: string; label: string }[]).map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 {c.label}
               </SelectItem>
@@ -163,7 +161,7 @@ export function UserForm({ criteria, initialValues, onSubmit }: Props) {
           }
           className="flex flex-col gap-2"
         >
-          {criteria.housingConditions.map((c) => (
+          {([] as { id: string; label: string }[]).map((c) => (
             <Label
               key={c.id}
               htmlFor={`housing-${c.id}`}
