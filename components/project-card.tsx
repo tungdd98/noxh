@@ -1,18 +1,23 @@
 import Image from 'next/image';
-import { MapPin, Building2, Home } from 'lucide-react';
+import { MapPin, Building2, Home, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { parseTotalUnits } from '@/lib/project-utils';
 import type { Project } from '@/types/noxh';
 
-type Props = { project: Project };
+type Props = {
+  project: Project;
+  onClick: () => void;
+};
 
-export function ProjectCard({ project }: Readonly<Props>) {
+export function ProjectCard({ project, onClick }: Readonly<Props>) {
+  const totalUnits = parseTotalUnits(project.scale);
+
   return (
-    <a
-      href={project.url ?? '#'}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      type="button"
+      onClick={onClick}
       className={cn(
-        'bg-card border-border flex overflow-hidden rounded-[14px] border-2 transition-all',
+        'bg-card border-border flex w-full overflow-hidden rounded-[14px] border-2 text-left transition-all',
         'shadow-[3px_3px_0_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--border)]'
       )}
     >
@@ -23,7 +28,7 @@ export function ProjectCard({ project }: Readonly<Props>) {
             alt={project.title}
             fill
             className="object-cover"
-            sizes="120px"
+            sizes="160px"
             unoptimized
           />
         ) : (
@@ -46,17 +51,23 @@ export function ProjectCard({ project }: Readonly<Props>) {
           )}
         </div>
 
-        <div className="flex flex-col gap-x-3 gap-y-1">
-          {project.capacity && (
+        <div className="flex flex-col gap-y-1">
+          {totalUnits !== null && (
             <span className="text-muted-foreground flex items-center gap-1 text-xs font-semibold">
               <Home className="h-3 w-3 shrink-0" />
-              {project.capacity}
+              {totalUnits.toLocaleString('vi-VN')} căn
             </span>
           )}
           {project.owner && (
             <span className="text-muted-foreground flex items-center gap-1 text-xs font-semibold">
               <Building2 className="h-3 w-3 shrink-0" />
               <span className="line-clamp-1">{project.owner}</span>
+            </span>
+          )}
+          {project.applyTime && project.applyTime !== '--' && (
+            <span className="text-muted-foreground flex items-center gap-1 text-xs font-semibold">
+              <CalendarDays className="h-3 w-3 shrink-0" />
+              <span className="line-clamp-1">{project.applyTime}</span>
             </span>
           )}
         </div>
@@ -69,6 +80,6 @@ export function ProjectCard({ project }: Readonly<Props>) {
           )}
         </div>
       </div>
-    </a>
+    </button>
   );
 }
