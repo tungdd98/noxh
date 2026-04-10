@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useProjects } from '@/hooks/use-projects';
+import { supabase } from '@/lib/supabase';
 import type { Criteria, Project } from '@/types/noxh';
+
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: vi.fn(),
+  },
+}));
 
 const mockCriteria: Criteria = {
   version: '2026-04-07',
@@ -38,10 +45,12 @@ const mockProjects: Project[] = [
     highlight: false,
     tag: null,
     updatedAt: '2026-04-09T00:00:00Z',
+    slug: 'test-project',
   },
 ];
 
 beforeEach(() => {
+  // Criteria vẫn fetch từ JSON file
   vi.stubGlobal(
     'fetch',
     vi.fn((url: string) => {
@@ -51,15 +60,16 @@ beforeEach(() => {
           json: () => Promise.resolve(mockCriteria),
         });
       }
-      if ((url as string).includes('projects.json')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockProjects),
-        });
-      }
       return Promise.reject(new Error('Unknown URL'));
     })
   );
+
+  // Projects từ Supabase
+  vi.mocked(supabase.from).mockReturnValue({
+    select: vi.fn().mockReturnValue({
+      order: vi.fn().mockResolvedValue({ data: mockProjects, error: null }),
+    }),
+  } as unknown as ReturnType<typeof supabase.from>);
 });
 
 describe('useProjects', () => {
@@ -75,11 +85,29 @@ describe('useProjects', () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.projects).toHaveLength(1);
     expect(result.current.projects[0].name).toBe('Test Project');
+    expect(result.current.projects[0].slug).toBe('test-project');
     expect(result.current.criteria?.version).toBe('2026-04-07');
     expect(result.current.error).toBeNull();
   });
 
-  it('sets error when fetch fails', async () => {
+  it('sets error when Supabase returns error', async () => {
+    vi.mocked(supabase.from).mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({
+          data: null,
+          error: new Error('DB error'),
+        }),
+      }),
+    } as unknown as ReturnType<typeof supabase.from>);
+    const { result } = renderHook(() => useProjects());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.error).toBe(
+      'Không thể tải dữ liệu dự án. Vui lòng thử lại.'
+    );
+    expect(result.current.projects).toEqual([]);
+  });
+
+  it('sets error when criteria fetch fails', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() => Promise.reject(new Error('Network error')))
