@@ -17,7 +17,7 @@ export function ProjectCard({ project, onClick }: Readonly<Props>) {
       type="button"
       onClick={onClick}
       className={cn(
-        'bg-card border-border flex w-full overflow-hidden rounded-[14px] border-2 text-left transition-all',
+        'bg-card border-border flex w-full overflow-hidden rounded-2xl border-2 text-left transition-all',
         'shadow-[3px_3px_0_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--border)]'
       )}
     >

@@ -24,7 +24,7 @@ type InfoRowProps = {
   className?: string;
 };
 
-function InfoRow({ label, value, className }: InfoRowProps) {
+function InfoRow({ label, value, className }: Readonly<InfoRowProps>) {
   if (!value || value === '--') return null;
   return (
     <div className={cn('flex flex-col gap-0.5', className)}>
@@ -66,16 +66,16 @@ export function ProjectDetailModal({
 
             <div className="p-6">
               <DialogHeader className="mb-4">
-                <div className="flex items-start justify-between gap-3">
-                  <DialogTitle className="text-xl leading-tight font-extrabold">
-                    {project.title}
-                  </DialogTitle>
-                  {project.status && (
+                <DialogTitle className="text-xl leading-tight font-extrabold">
+                  {project.title}
+                </DialogTitle>
+                {project.status && (
+                  <div className="flex items-start justify-between gap-3">
                     <span className="border-muted-border bg-muted text-muted-foreground shrink-0 rounded-md border px-2 py-0.5 text-xs font-bold">
                       {project.status}
                     </span>
-                  )}
-                </div>
+                  </div>
+                )}
               </DialogHeader>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
