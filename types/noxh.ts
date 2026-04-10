@@ -33,6 +33,7 @@ export type Project = {
   highlight: boolean;
   tag: string | null;
   updatedAt: string;
+  slug: string;
 };
 
 export type Criteria = {
