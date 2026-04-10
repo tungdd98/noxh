@@ -1,12 +1,18 @@
 export type Project = {
   id: number;
   title: string;
-  address: string | null;
-  capacity: string | null;
   status: string | null;
+  price: string | null;
+  handover: string | null;
+  address: string | null;
   owner: string | null;
-  url: string | null;
+  applyTime: string | null;
+  scale: string | null;
+  area: string | null;
+  density: string | null;
+  maintenance: string | null;
   imageUrl: string | null;
+  url: string | null;
   scrapedAt: string | null;
 };
 
