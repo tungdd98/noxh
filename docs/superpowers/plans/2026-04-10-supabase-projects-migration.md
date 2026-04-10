@@ -12,11 +12,12 @@
 
 ## File Map
 
-| File                         | Action                                                       |
-| ---------------------------- | ------------------------------------------------------------ |
-| `lib/supabase.ts`            | **Tạo mới** — browser client singleton                       |
-| `hooks/use-projects.ts`      | **Sửa** — thay `fetch(projects.json)` bằng Supabase query    |
-| `hooks/use-projects.test.ts` | **Sửa** — mock `@/lib/supabase` thay vì `fetch` cho projects |
+| File                         | Action                                                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------- |
+| `lib/supabase.ts`            | **Tạo mới** — browser client singleton                                                |
+| `types/noxh.ts`              | **Sửa** — thêm field `slug: string` vào `Project` type                                |
+| `hooks/use-projects.ts`      | **Sửa** — thay `fetch(projects.json)` bằng Supabase query                             |
+| `hooks/use-projects.test.ts` | **Sửa** — mock `@/lib/supabase` thay vì `fetch` cho projects, thêm slug vào mock data |
 
 ---
 
@@ -55,7 +56,8 @@ create table if not exists projects (
   score               int4        not null,
   highlight           bool        not null,
   tag                 text,
-  "updatedAt"         timestamptz not null
+  "updatedAt"         timestamptz not null,
+  slug                text        not null unique
 );
 
 -- 2. Bật Row Level Security
@@ -70,7 +72,7 @@ insert into projects (
   id, name, investor, district, "provinceId", province,
   price, "minArea", "maxArea", "minPrice", "maxPrice", "totalUnits",
   status, "statusType", handover, priority, "targetCategories",
-  "incomeLimit", restricted, quality, notes, score, highlight, tag, "updatedAt"
+  "incomeLimit", restricted, quality, notes, score, highlight, tag, "updatedAt", slug
 ) values
   (
     1, 'NOXH Tân Lập', 'Cty CP Đầu tư phát triển Ngôi sao Châu Á',
@@ -82,7 +84,7 @@ insert into projects (
     25000000, false,
     'Tòa 21 tầng, 2 tầng hầm, nhiều căn nhất trong nhóm',
     'CẦN NỘP HỒ SƠ NGAY — còn ~3 tuần. Nhiều căn nhất = cơ hội trúng thăm cao nhất.',
-    93, true, 'KHẨN', '2026-04-09T08:00:00Z'
+    93, true, 'KHẨN', '2026-04-09T08:00:00Z', 'noxh-tan-lap'
   ),
   (
     2, 'NOXH Ngọc Hồi', 'Coma7 (Cơ khí & Xây lắp số 7)',
@@ -94,7 +96,7 @@ insert into projects (
     25000000, false,
     'Được BXD đánh giá chất lượng thi công tốt, CĐT có kinh nghiệm',
     'Giá/căn tốt nhất — vốn 930tr gần đủ mua đứt căn 40m². Chuẩn bị hồ sơ trước Q3.',
-    90, true, 'TOP GIÁ', '2026-04-09T08:00:00Z'
+    90, true, 'TOP GIÁ', '2026-04-09T08:00:00Z', 'noxh-ngoc-hoi'
   ),
   (
     3, 'NOXH Tây Nam Mễ Trì', 'Cty CP Xây dựng & PT Nhà DAC Hà Nội',
@@ -106,7 +108,7 @@ insert into projects (
     25000000, false,
     'DAC HN là CĐT có kinh nghiệm tại Nam Từ Liêm',
     'VỊ TRÍ SỐ 1 — sát Mễ Trì 2km. Quỹ NOXH nhỏ (~120 căn), lịch thu hồ sơ chưa rõ.',
-    78, false, 'VỊ TRÍ ĐỈNH', '2026-04-09T08:00:00Z'
+    78, false, 'VỊ TRÍ ĐỈNH', '2026-04-09T08:00:00Z', 'noxh-tay-nam-me-tri'
   ),
   (
     4, 'Handico CT2', 'Tổng Cty ĐTPT Nhà Hà Nội (Handico)',
@@ -118,7 +120,7 @@ insert into projects (
     25000000, false,
     'Handico là CĐT nhà nước uy tín hàng đầu HN',
     'Hoàn thành Q4/2026 → có thể thu hồ sơ Q2/Q3. Cần theo dõi Sở XD HN.',
-    68, false, null, '2026-04-09T08:00:00Z'
+    68, false, null, '2026-04-09T08:00:00Z', 'handico-ct2'
   ),
   (
     5, 'NOXH Minh Đức', 'Cty CP Tập đoàn G6 + Minh Đức',
@@ -130,7 +132,7 @@ insert into projects (
     25000000, false,
     'CĐT mới, chưa có thành tích bàn giao thực tế',
     'Xa trung tâm (~25km). Giá chưa công bố. Căn to (70–77m²) = giá tổng cao hơn.',
-    52, false, null, '2026-04-09T08:00:00Z'
+    52, false, null, '2026-04-09T08:00:00Z', 'noxh-minh-duc'
   ),
   (
     6, 'Bamboo Garden', 'CEO Group',
@@ -142,7 +144,7 @@ insert into projects (
     25000000, false,
     'CEO Group uy tín, đã có nhiều dự án bàn giao',
     'Giá siêu rẻ nhưng xa trung tâm (~35km). Plan B nếu WFH hoặc chuyển việc.',
-    45, false, null, '2026-04-09T08:00:00Z'
+    45, false, null, '2026-04-09T08:00:00Z', 'bamboo-garden'
   );
 ```
 
@@ -183,6 +185,31 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 ```bash
 git add lib/supabase.ts package.json package-lock.json
 git commit -m "feat: add Supabase browser client"
+```
+
+---
+
+## Task 2b: Thêm `slug` vào `Project` type
+
+**Files:**
+
+- Modify: `types/noxh.ts`
+
+- [ ] **Step 1: Thêm field `slug` vào `Project` type**
+
+Trong `types/noxh.ts`, thêm `slug: string;` sau field `tag`:
+
+```ts
+tag: string | null;
+updatedAt: string;
+slug: string;
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add types/noxh.ts
+git commit -m "feat(types): add slug field to Project type"
 ```
 
 ---
@@ -253,6 +280,7 @@ const mockProjects: Project[] = [
     highlight: false,
     tag: null,
     updatedAt: '2026-04-09T00:00:00Z',
+    slug: 'test-project',
   },
 ];
 

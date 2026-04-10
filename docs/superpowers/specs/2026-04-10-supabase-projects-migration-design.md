@@ -55,8 +55,11 @@ Table name: `projects`
 | `highlight`        | bool        | No       |
 | `tag`              | text        | Yes      |
 | `updatedAt`        | timestamptz | No       |
+| `slug`             | text        | No       |
 
 Column names giữ camelCase để khớp trực tiếp với `Project` type — không cần mapping.
+
+`slug` là URL-friendly identifier sinh từ tên dự án (bỏ dấu tiếng Việt, lowercase, thay khoảng trắng bằng `-`). Được lưu sẵn trong DB, không sinh runtime. Ví dụ: `NOXH Minh Đức` → `noxh-minh-duc`.
 
 ## Row Level Security
 
