@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,6 +37,18 @@ const DEFAULT_FORM: UserInfo = {
   previouslyBought: false,
 };
 
+const LS_FORM_KEY = 'noxh_user_form';
+const LS_WEIGHTS_KEY = 'noxh_criteria_weights';
+
+function readLS<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 const WEIGHT_OPTIONS = [
   { value: 'high', label: 'Cao' },
   { value: 'medium', label: 'TB' },
@@ -47,7 +59,7 @@ const WEIGHT_OPTIONS = [
 const CRITERIA_LABELS: Record<keyof CriteriaWeights, string> = {
   finance: 'Tài chính',
   location: 'Vị trí',
-  urgency: 'Urgency',
+  urgency: 'Mức độ cấp thiết',
   investorReputation: 'Uy tín CĐT',
 };
 
@@ -58,11 +70,21 @@ const SELECT_TRIGGER_CLASS =
   'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto data-[size=default]:h-auto';
 
 export function UserForm({ onSubmit, loading }: Props) {
-  const [form, setForm] = useState<UserInfo>(DEFAULT_FORM);
-  const [weights, setWeights] = useState<CriteriaWeights>(
-    DEFAULT_CRITERIA_WEIGHTS
+  const [form, setForm] = useState<UserInfo>(() =>
+    readLS(LS_FORM_KEY, DEFAULT_FORM)
+  );
+  const [weights, setWeights] = useState<CriteriaWeights>(() =>
+    readLS(LS_WEIGHTS_KEY, DEFAULT_CRITERIA_WEIGHTS)
   );
   const [criteriaOpen, setCriteriaOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(LS_FORM_KEY, JSON.stringify(form));
+  }, [form]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_WEIGHTS_KEY, JSON.stringify(weights));
+  }, [weights]);
 
   const isValid =
     form.income > 0 && form.category !== '' && form.workAddress.trim() !== '';
