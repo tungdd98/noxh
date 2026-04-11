@@ -158,7 +158,7 @@ export function ProjectCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'bg-card border-border relative flex w-full overflow-hidden rounded-2xl border-2 text-left transition-all',
+        'bg-card border-border relative flex w-full flex-col overflow-hidden rounded-2xl border-2 text-left transition-all sm:flex-row',
         rankCfg
           ? rankCfg.border
           : 'shadow-[3px_3px_0_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--border)]',
@@ -166,14 +166,14 @@ export function ProjectCard({
       )}
     >
       {/* Thumbnail */}
-      <div className="bg-muted relative aspect-square w-40 shrink-0">
+      <div className="bg-muted relative aspect-[4/3] w-full sm:aspect-square sm:w-40 sm:shrink-0">
         {project.imageUrl ? (
           <Image
             src={project.imageUrl}
             alt={project.title}
             fill
             className="object-cover"
-            sizes="160px"
+            sizes="(min-width: 640px) 160px, 100vw"
             unoptimized
           />
         ) : (
