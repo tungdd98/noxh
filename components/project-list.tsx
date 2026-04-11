@@ -22,7 +22,7 @@ type Props = {
   error: string | null;
   onPageChange: (page: number) => void;
   pageSize: number;
-  rankOffset?: number;
+  rankOffset?: number | undefined;
   weights?: CriteriaWeights;
 };
 
@@ -34,7 +34,7 @@ export function ProjectList({
   error,
   onPageChange,
   pageSize,
-  rankOffset = 0,
+  rankOffset,
   weights,
 }: Readonly<Props>) {
   const [selectedProject, setSelectedProject] = useState<
@@ -86,7 +86,7 @@ export function ProjectList({
             <ProjectCard
               key={project.id}
               project={project}
-              rank={rankOffset + i + 1}
+              rank={rankOffset != null ? rankOffset + i + 1 : undefined}
               weights={weights}
               onClick={() => setSelectedProject(project)}
             />

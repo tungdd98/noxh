@@ -102,8 +102,8 @@ export function scoreInvestorReputation(project: Project): number {
 }
 
 const INCOME_LIMIT: Record<'single' | 'married', number> = {
-  single: 15_000_000,
-  married: 30_000_000,
+  single: 25_000_000,
+  married: 50_000_000,
 };
 
 export function checkEligible(project: Project, userInfo: UserInfo): boolean {
