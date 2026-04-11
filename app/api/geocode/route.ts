@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 
-const MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-
 export async function POST(req: Request) {
   let body: { address?: string };
   try {
@@ -16,22 +14,26 @@ export async function POST(req: Request) {
   }
 
   try {
-    const url = new URL('https://maps.googleapis.com/maps/api/geocode/json');
-    url.searchParams.set('address', address);
-    url.searchParams.set('key', MAPS_API_KEY ?? '');
-    url.searchParams.set('region', 'vn');
+    const url = new URL('https://nominatim.openstreetmap.org/search');
+    url.searchParams.set('q', address);
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('limit', '1');
+    url.searchParams.set('countrycodes', 'vn');
 
-    const gRes = await fetch(url.toString());
-    const gData = await gRes.json();
+    const gRes = await fetch(url.toString(), {
+      headers: { 'User-Agent': 'noxh-app/1.0' },
+    });
+    const results = await gRes.json();
 
-    if (gData.status !== 'OK' || !gData.results.length) {
+    if (!Array.isArray(results) || results.length === 0) {
       return NextResponse.json(
         { error: 'Không tìm thấy địa chỉ' },
         { status: 404 }
       );
     }
 
-    const { lat, lng } = gData.results[0].geometry.location;
+    const lat = parseFloat(results[0].lat);
+    const lng = parseFloat(results[0].lon);
     return NextResponse.json({ lat, lng });
   } catch {
     return NextResponse.json({ error: 'Geocoding thất bại' }, { status: 500 });

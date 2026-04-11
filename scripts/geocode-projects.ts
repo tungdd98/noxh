@@ -2,26 +2,31 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY!;
-const mapsKey = process.env.GOOGLE_MAPS_API_KEY!;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function geocodeAddress(
   address: string
 ): Promise<{ lat: number; lng: number } | null> {
-  const url = new URL('https://maps.googleapis.com/maps/api/geocode/json');
-  url.searchParams.set('address', address);
-  url.searchParams.set('key', mapsKey);
-  url.searchParams.set('region', 'vn');
+  const url = new URL('https://nominatim.openstreetmap.org/search');
+  url.searchParams.set('q', address);
+  url.searchParams.set('format', 'json');
+  url.searchParams.set('limit', '1');
+  url.searchParams.set('countrycodes', 'vn');
 
-  const res = await fetch(url.toString());
-  const data = await res.json();
+  const res = await fetch(url.toString(), {
+    headers: { 'User-Agent': 'noxh-app/1.0' },
+  });
+  const results = await res.json();
 
-  if (data.status !== 'OK' || !data.results.length) {
+  if (!Array.isArray(results) || results.length === 0) {
     return null;
   }
 
-  return data.results[0].geometry.location;
+  return {
+    lat: parseFloat(results[0].lat),
+    lng: parseFloat(results[0].lon),
+  };
 }
 
 async function main() {
@@ -66,8 +71,8 @@ async function main() {
       );
     }
 
-    // Rate limit: 10 req/s Google Maps free tier
-    await new Promise((r) => setTimeout(r, 150));
+    // Rate limit: Nominatim yêu cầu tối đa 1 req/s
+    await new Promise((r) => setTimeout(r, 1100));
   }
 
   console.log('Hoàn thành!');

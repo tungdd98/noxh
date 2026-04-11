@@ -20,10 +20,9 @@ describe('POST /api/geocode', () => {
   it('returns lat/lng on successful geocode', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({
-        status: 'OK',
-        results: [{ geometry: { location: { lat: 21.0678, lng: 105.8012 } } }],
-      }),
+      json: async () => [
+        { lat: '21.0678', lon: '105.8012', display_name: 'Xuân Đỉnh, Hà Nội' },
+      ],
     });
 
     const res = await POST(makeRequest({ address: 'Xuân Đỉnh, Hà Nội' }));
@@ -33,10 +32,10 @@ describe('POST /api/geocode', () => {
     expect(data).toEqual({ lat: 21.0678, lng: 105.8012 });
   });
 
-  it('returns 404 when Google returns ZERO_RESULTS', async () => {
+  it('returns 404 when Nominatim returns empty results', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ status: 'ZERO_RESULTS', results: [] }),
+      json: async () => [],
     });
 
     const res = await POST(
@@ -53,7 +52,7 @@ describe('POST /api/geocode', () => {
     expect(res.status).toBe(400);
   });
 
-  it('returns 500 when Google API call fails', async () => {
+  it('returns 500 when Nominatim API call fails', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
     const res = await POST(makeRequest({ address: 'Hà Nội' }));
