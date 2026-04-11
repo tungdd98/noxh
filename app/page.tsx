@@ -2,25 +2,47 @@
 
 import { useState } from 'react';
 import { useProjects } from '@/hooks/use-projects';
+import { useScoring } from '@/hooks/use-scoring';
 import { UserForm } from '@/components/user-form';
 import { ProjectList } from '@/components/project-list';
+import type { UserInfo, CriteriaWeights } from '@/types/noxh';
 
 const PAGE_SIZE = 10;
 
 export default function NOXHPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { projects, loading, error } = useProjects();
+  const {
+    projects,
+    loading: projectsLoading,
+    error: projectsError,
+  } = useProjects();
+  const {
+    scored,
+    loading: scoringLoading,
+    error: scoringError,
+    score,
+  } = useScoring(projects);
 
-  const totalCount = projects.length;
-  const pagedProjects = projects.slice(
+  const hasScored = scored.length > 0;
+  const displayProjects = hasScored ? scored : projects;
+  const totalCount = displayProjects.length;
+  const pagedProjects = displayProjects.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+
+  async function handleFormSubmit(info: UserInfo, weights: CriteriaWeights) {
+    setCurrentPage(1);
+    await score(info, weights);
+  }
 
   function handlePageChange(page: number) {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  const loading = projectsLoading || scoringLoading;
+  const error = projectsError ?? scoringError;
 
   return (
     <main className="bg-background text-foreground min-h-screen">
@@ -35,7 +57,7 @@ export default function NOXHPage() {
         </div>
         {totalCount > 0 && (
           <span className="border-primary bg-secondary text-secondary-foreground rounded-full border-[1.5px] px-3 py-1 text-xs font-bold">
-            {totalCount} dự án
+            {totalCount} dự án{hasScored ? ' • đã xếp hạng' : ''}
           </span>
         )}
       </header>
@@ -46,7 +68,9 @@ export default function NOXHPage() {
             Danh sách <span className="text-primary">nhà ở xã hội</span>
           </h1>
           <p className="text-muted-foreground max-w-lg text-sm">
-            Tổng hợp các dự án nhà ở xã hội tại Hà Nội.
+            {hasScored
+              ? 'Dự án đã được xếp hạng theo mức độ phù hợp với bạn.'
+              : 'Nhập thông tin của bạn để tìm dự án phù hợp nhất.'}
           </p>
         </div>
       </div>
@@ -57,7 +81,7 @@ export default function NOXHPage() {
             <p className="text-primary mb-5 text-xs font-extrabold tracking-widest uppercase">
               Thông tin của bạn
             </p>
-            <UserForm onSubmit={() => {}} />
+            <UserForm onSubmit={handleFormSubmit} loading={scoringLoading} />
           </aside>
 
           <section className="min-w-0 p-6">
