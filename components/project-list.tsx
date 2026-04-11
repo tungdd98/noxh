@@ -12,10 +12,10 @@ import {
   PaginationLink,
   PaginationEllipsis,
 } from '@/components/ui/pagination';
-import type { Project } from '@/types/noxh';
+import type { Project, ScoredProject } from '@/types/noxh';
 
 type Props = {
-  projects: Project[];
+  projects: (Project | ScoredProject)[];
   totalCount: number;
   currentPage: number;
   loading: boolean;
@@ -33,7 +33,9 @@ export function ProjectList({
   onPageChange,
   pageSize,
 }: Readonly<Props>) {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<
+    Project | ScoredProject | null
+  >(null);
 
   if (loading) {
     return (
