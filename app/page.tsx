@@ -18,6 +18,7 @@ export default function NOXHPage() {
   } = useProjects();
   const {
     scored,
+    weights,
     loading: scoringLoading,
     error: scoringError,
     score,
@@ -94,6 +95,7 @@ export default function NOXHPage() {
               onPageChange={handlePageChange}
               pageSize={PAGE_SIZE}
               rankOffset={(currentPage - 1) * PAGE_SIZE}
+              weights={weights ?? undefined}
             />
           </section>
         </div>

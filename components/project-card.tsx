@@ -8,11 +8,12 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { parseTotalUnits } from '@/lib/project-utils';
-import type { Project, ScoredProject } from '@/types/noxh';
+import type { Project, ScoredProject, CriteriaWeights } from '@/types/noxh';
 
 type Props = {
   project: Project | ScoredProject;
   rank?: number;
+  weights?: CriteriaWeights;
   onClick: () => void;
 };
 
@@ -108,10 +109,20 @@ function criteriaColor(score: number | null): string {
   return 'bg-red-100 text-red-600';
 }
 
-function CriteriaMiniScores({ scored }: { scored: ScoredProject }) {
+function CriteriaMiniScores({
+  scored,
+  weights,
+}: {
+  scored: ScoredProject;
+  weights?: CriteriaWeights;
+}) {
+  const visibleChips = CRITERIA_CHIPS.filter(
+    ({ key }) => !weights || weights[key] !== 'off'
+  );
+  if (visibleChips.length === 0) return null;
   return (
-    <div className="flex gap-1">
-      {CRITERIA_CHIPS.map(({ key, icon }) => {
+    <div className="flex flex-wrap gap-1">
+      {visibleChips.map(({ key, icon }) => {
         const score = scored.scoreBreakdown[key];
         return (
           <span
@@ -132,7 +143,12 @@ function CriteriaMiniScores({ scored }: { scored: ScoredProject }) {
 
 // ─── Card ──────────────────────────────────────────────────────────────────────
 
-export function ProjectCard({ project, rank, onClick }: Readonly<Props>) {
+export function ProjectCard({
+  project,
+  rank,
+  weights,
+  onClick,
+}: Readonly<Props>) {
   const totalUnits = parseTotalUnits(project.scale);
   const scored = isScoredProject(project) ? project : null;
   const rankCfg = rank && rank <= 3 ? RANK_CONFIG[rank as 1 | 2 | 3] : null;
@@ -231,7 +247,11 @@ export function ProjectCard({ project, rank, onClick }: Readonly<Props>) {
 
         {/* Bottom row: criteria chips + status badge */}
         <div className="mt-1 flex items-center justify-between gap-2">
-          {scored ? <CriteriaMiniScores scored={scored} /> : <span />}
+          {scored ? (
+            <CriteriaMiniScores scored={scored} weights={weights} />
+          ) : (
+            <span />
+          )}
           {project.status && (
             <span
               className={cn(

@@ -10,12 +10,13 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { Project, ScoredProject } from '@/types/noxh';
+import type { Project, ScoredProject, CriteriaWeights } from '@/types/noxh';
 
 type Props = {
   project: Project | ScoredProject | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  weights?: CriteriaWeights;
 };
 
 type InfoRowProps = {
@@ -68,6 +69,7 @@ export function ProjectDetailModal({
   project,
   open,
   onOpenChange,
+  weights,
 }: Readonly<Props>) {
   const scored = project && isScoredProject(project) ? project : null;
 
@@ -117,22 +119,30 @@ export function ProjectDetailModal({
                       ⚠️ Bạn có thể không đủ điều kiện cho dự án này
                     </p>
                   )}
-                  <ScoreBar
-                    label="Tài chính"
-                    score={scored.scoreBreakdown.finance}
-                  />
-                  <ScoreBar
-                    label="Vị trí"
-                    score={scored.scoreBreakdown.location}
-                  />
-                  <ScoreBar
-                    label="Urgency"
-                    score={scored.scoreBreakdown.urgency}
-                  />
-                  <ScoreBar
-                    label="Uy tín CĐT"
-                    score={scored.scoreBreakdown.investorReputation}
-                  />
+                  {(!weights || weights.finance !== 'off') && (
+                    <ScoreBar
+                      label="Tài chính"
+                      score={scored.scoreBreakdown.finance}
+                    />
+                  )}
+                  {(!weights || weights.location !== 'off') && (
+                    <ScoreBar
+                      label="Vị trí"
+                      score={scored.scoreBreakdown.location}
+                    />
+                  )}
+                  {(!weights || weights.urgency !== 'off') && (
+                    <ScoreBar
+                      label="Urgency"
+                      score={scored.scoreBreakdown.urgency}
+                    />
+                  )}
+                  {(!weights || weights.investorReputation !== 'off') && (
+                    <ScoreBar
+                      label="Uy tín CĐT"
+                      score={scored.scoreBreakdown.investorReputation}
+                    />
+                  )}
                   {scored.distanceKm !== null && (
                     <p className="text-muted-foreground text-xs">
                       📍 Cách nơi làm việc {scored.distanceKm}km (đường chim

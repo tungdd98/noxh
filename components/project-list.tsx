@@ -12,7 +12,7 @@ import {
   PaginationLink,
   PaginationEllipsis,
 } from '@/components/ui/pagination';
-import type { Project, ScoredProject } from '@/types/noxh';
+import type { Project, ScoredProject, CriteriaWeights } from '@/types/noxh';
 
 type Props = {
   projects: (Project | ScoredProject)[];
@@ -23,6 +23,7 @@ type Props = {
   onPageChange: (page: number) => void;
   pageSize: number;
   rankOffset?: number;
+  weights?: CriteriaWeights;
 };
 
 export function ProjectList({
@@ -34,6 +35,7 @@ export function ProjectList({
   onPageChange,
   pageSize,
   rankOffset = 0,
+  weights,
 }: Readonly<Props>) {
   const [selectedProject, setSelectedProject] = useState<
     Project | ScoredProject | null
@@ -85,6 +87,7 @@ export function ProjectList({
               key={project.id}
               project={project}
               rank={rankOffset + i + 1}
+              weights={weights}
               onClick={() => setSelectedProject(project)}
             />
           ))}
@@ -166,6 +169,7 @@ export function ProjectList({
       <ProjectDetailModal
         project={selectedProject}
         open={selectedProject !== null}
+        weights={weights}
         onOpenChange={(open) => {
           if (!open) setSelectedProject(null);
         }}

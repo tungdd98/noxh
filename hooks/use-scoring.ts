@@ -11,6 +11,7 @@ import type {
 
 type ScoringState = {
   scored: ScoredProject[];
+  weights: CriteriaWeights | null;
   loading: boolean;
   error: string | null;
 };
@@ -18,12 +19,13 @@ type ScoringState = {
 export function useScoring(projects: Project[]) {
   const [state, setState] = useState<ScoringState>({
     scored: [],
+    weights: null,
     loading: false,
     error: null,
   });
 
   async function score(userInfo: UserInfo, weights: CriteriaWeights) {
-    setState({ scored: [], loading: true, error: null });
+    setState({ scored: [], weights: null, loading: true, error: null });
 
     try {
       const res = await fetch('/api/geocode', {
@@ -37,7 +39,12 @@ export function useScoring(projects: Project[]) {
       const data = await res.json();
 
       if (data.error) {
-        setState({ scored: [], loading: false, error: data.error });
+        setState({
+          scored: [],
+          weights: null,
+          loading: false,
+          error: data.error,
+        });
         return;
       }
 
@@ -48,10 +55,11 @@ export function useScoring(projects: Project[]) {
         data.lng,
         weights
       );
-      setState({ scored, loading: false, error: null });
+      setState({ scored, weights, loading: false, error: null });
     } catch {
       setState({
         scored: [],
+        weights: null,
         loading: false,
         error: 'Không thể geocode địa chỉ. Vui lòng thử lại.',
       });
