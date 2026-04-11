@@ -47,9 +47,9 @@ export default function NOXHPage() {
 
   return (
     <main className="bg-background text-foreground min-h-screen">
-      <header className="bg-background border-border sticky top-0 z-10 flex h-15 items-center justify-between border-b-2 px-6">
+      <header className="bg-background/90 border-border sticky top-0 z-10 flex h-15 items-center justify-between border-b-2 px-6 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="bg-primary border-border flex h-9 w-9 items-center justify-center rounded-[8px] border-2 text-lg shadow-[2px_2px_0_var(--border)]">
+          <div className="bg-primary flex h-9 w-9 items-center justify-center rounded-2xl text-lg shadow-[0_4px_0_0_rgba(194,65,12,0.5)]">
             🏠
           </div>
           <span className="text-foreground text-lg font-extrabold">
@@ -57,15 +57,15 @@ export default function NOXHPage() {
           </span>
         </div>
         {totalCount > 0 && (
-          <span className="border-primary bg-secondary text-secondary-foreground rounded-full border-[1.5px] px-3 py-1 text-xs font-bold">
+          <span className="bg-secondary text-secondary-foreground rounded-full px-3 py-1 text-xs font-bold shadow-[0_3px_0_0_rgba(253,186,116,0.6)]">
             {totalCount} dự án{hasScored ? ' • đã xếp hạng' : ''}
           </span>
         )}
       </header>
 
-      <div className="bg-background border-border border-b-2 px-6 py-8">
+      <div className="border-border border-b-2 px-6 py-8">
         <div className="mx-auto max-w-5xl">
-          <h1 className="text-foreground mb-2 text-4xl leading-tight font-black md:text-5xl">
+          <h1 className="text-foreground mb-2 text-2xl leading-tight font-black md:text-5xl">
             Danh sách <span className="text-primary">nhà ở xã hội</span>
           </h1>
           <p className="text-muted-foreground max-w-lg text-sm">
@@ -78,7 +78,7 @@ export default function NOXHPage() {
 
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-col md:grid md:grid-cols-[300px_1fr]">
-          <aside className="border-border bg-card scrollbar-thin border-b-2 p-6 md:sticky md:top-15 md:h-[calc(100vh-60px)] md:overflow-y-auto md:border-r-2 md:border-b-0">
+          <aside className="border-border bg-card/60 scrollbar-thin border-b-2 p-6 backdrop-blur-sm md:sticky md:top-15 md:h-[calc(100vh-60px)] md:overflow-y-auto md:border-r-2 md:border-b-0">
             <p className="text-primary mb-5 text-xs font-extrabold tracking-widest uppercase">
               Thông tin của bạn
             </p>

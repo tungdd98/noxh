@@ -64,10 +64,10 @@ const CRITERIA_LABELS: Record<keyof CriteriaWeights, string> = {
 };
 
 const INPUT_CLASS =
-  'h-auto w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1';
+  'h-auto w-full rounded-2xl border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1';
 
 const SELECT_TRIGGER_CLASS =
-  'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto data-[size=default]:h-auto';
+  'w-full rounded-2xl border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto data-[size=default]:h-auto';
 
 export function UserForm({ onSubmit, loading }: Props) {
   const [form, setForm] = useState<UserInfo>(DEFAULT_FORM);
@@ -131,9 +131,9 @@ export function UserForm({ onSubmit, loading }: Props) {
               key={opt.value}
               htmlFor={opt.value}
               className={cn(
-                'flex flex-1 cursor-pointer items-center justify-center rounded-[10px] border-2 px-3 py-2.5 text-sm font-bold transition-all',
+                'flex flex-1 cursor-pointer items-center justify-center rounded-2xl border-2 px-3 py-2.5 text-sm font-bold transition-all',
                 form.maritalStatus === opt.value
-                  ? 'border-primary bg-primary text-primary-foreground shadow-[2px_2px_0_var(--border)]'
+                  ? 'border-primary bg-primary text-primary-foreground shadow-[0_4px_0_0_rgba(194,65,12,0.5)]'
                   : 'bg-input border-border text-foreground hover:bg-muted'
               )}
             >
@@ -244,9 +244,9 @@ export function UserForm({ onSubmit, loading }: Props) {
               key={c.id}
               htmlFor={`housing-${c.id}`}
               className={cn(
-                'flex w-full cursor-pointer items-center rounded-[10px] border-2 px-3.5 py-2.5 text-sm font-bold transition-all',
+                'flex w-full cursor-pointer items-center rounded-2xl border-2 px-3.5 py-2.5 text-sm font-bold transition-all',
                 form.housingStatus === c.id
-                  ? 'border-primary bg-primary text-primary-foreground shadow-[2px_2px_0_var(--border)]'
+                  ? 'border-primary bg-primary text-primary-foreground shadow-[0_4px_0_0_rgba(194,65,12,0.5)]'
                   : 'bg-input border-border text-foreground hover:bg-muted'
               )}
             >
@@ -280,11 +280,11 @@ export function UserForm({ onSubmit, loading }: Props) {
       </div>
 
       {/* Tiêu chí đánh giá — accordion */}
-      <div className="border-border rounded-[10px] border-2">
+      <div className="border-border rounded-2xl border-2">
         <button
           type="button"
           onClick={() => setCriteriaOpen((o) => !o)}
-          className="text-foreground flex w-full items-center justify-between px-3.5 py-2.5 text-xs font-bold"
+          className="text-foreground flex w-full items-center justify-between px-3.5 py-2.5 text-sm font-bold"
         >
           <span>Tiêu chí đánh giá</span>
           <span>{criteriaOpen ? '▲' : '▼'}</span>
@@ -298,7 +298,7 @@ export function UserForm({ onSubmit, loading }: Props) {
                   <span className="text-foreground text-xs font-bold">
                     {CRITERIA_LABELS[key]}
                   </span>
-                  <div className="border-border flex overflow-hidden rounded-[8px] border-2">
+                  <div className="border-border flex overflow-hidden rounded-xl border-2">
                     {WEIGHT_OPTIONS.map((opt, i) => (
                       <button
                         key={opt.value}
@@ -325,7 +325,7 @@ export function UserForm({ onSubmit, loading }: Props) {
               <span className="text-foreground text-xs font-bold">
                 Đối tượng
               </span>
-              <div className="border-border flex items-center justify-center rounded-[8px] border-2 py-1.5">
+              <div className="border-border flex items-center justify-center rounded-xl border-2 py-1.5">
                 <span className="text-muted-foreground text-xs font-bold">
                   🔒 Bắt buộc
                 </span>

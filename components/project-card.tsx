@@ -27,17 +27,20 @@ const RANK_CONFIG = {
   1: {
     icon: '🥇',
     badge: 'bg-yellow-400 text-yellow-900',
-    border: 'border-yellow-400 shadow-[3px_3px_0_theme(colors.yellow.400)]',
+    border:
+      'ring-2 ring-yellow-400 shadow-[0_8px_0_0_rgba(202,138,4,0.45),0_12px_20px_rgba(0,0,0,0.08)] hover:-translate-y-1 hover:shadow-[0_12px_0_0_rgba(202,138,4,0.5),0_18px_24px_rgba(0,0,0,0.1)]',
   },
   2: {
     icon: '🥈',
     badge: 'bg-zinc-300 text-zinc-800',
-    border: 'border-zinc-400 shadow-[3px_3px_0_theme(colors.zinc.400)]',
+    border:
+      'ring-2 ring-zinc-300 shadow-[0_8px_0_0_rgba(161,161,170,0.5),0_12px_20px_rgba(0,0,0,0.08)] hover:-translate-y-1 hover:shadow-[0_12px_0_0_rgba(161,161,170,0.55),0_18px_24px_rgba(0,0,0,0.1)]',
   },
   3: {
     icon: '🥉',
     badge: 'bg-amber-600 text-white',
-    border: 'border-amber-600 shadow-[3px_3px_0_theme(colors.amber.600)]',
+    border:
+      'ring-2 ring-amber-500 shadow-[0_8px_0_0_rgba(217,119,6,0.45),0_12px_20px_rgba(0,0,0,0.08)] hover:-translate-y-1 hover:shadow-[0_12px_0_0_rgba(217,119,6,0.5),0_18px_24px_rgba(0,0,0,0.1)]',
   },
 } as const;
 
@@ -55,7 +58,7 @@ function ScoreBadge({ score, eligible }: { score: number; eligible: boolean }) {
   return (
     <div
       className={cn(
-        'absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full text-sm font-black shadow-[2px_2px_0_rgba(0,0,0,0.25)]',
+        'absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full text-sm font-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]',
         bgColor
       )}
     >
@@ -89,8 +92,8 @@ const CRITERIA_CHIPS = [
 
 function criteriaColor(score: number | null): string {
   if (score === null) return 'bg-muted text-muted-foreground';
-  if (score >= 70) return 'bg-green-100 text-green-700';
-  if (score >= 40) return 'bg-amber-100 text-amber-700';
+  if (score >= 70) return 'bg-emerald-100 text-emerald-700';
+  if (score >= 40) return 'bg-orange-100 text-orange-700';
   return 'bg-red-100 text-red-600';
 }
 
@@ -113,7 +116,7 @@ function CriteriaMiniScores({
           <span
             key={key}
             className={cn(
-              'flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold',
+              'flex items-center gap-0.5 rounded-lg px-1.5 py-0.5 text-[10px] font-bold',
               criteriaColor(score)
             )}
           >
@@ -143,15 +146,15 @@ export function ProjectCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'bg-card border-border relative flex w-full flex-col overflow-hidden rounded-2xl border-2 text-left transition-all sm:flex-row',
+        'bg-card relative flex w-full flex-col overflow-hidden rounded-[24px] text-left transition-all duration-200 sm:flex-row',
         rankCfg
           ? rankCfg.border
-          : 'shadow-[3px_3px_0_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--border)]',
+          : 'shadow-[0_8px_0_0_rgba(234,88,12,0.18),0_12px_24px_rgba(0,0,0,0.07)] hover:-translate-y-1 hover:shadow-[0_12px_0_0_rgba(234,88,12,0.22),0_18px_28px_rgba(0,0,0,0.09)]',
         scored && !scored.scoreBreakdown.eligible && 'opacity-60'
       )}
     >
       {/* Thumbnail */}
-      <div className="bg-muted relative aspect-[4/3] w-full sm:aspect-square sm:w-40 sm:shrink-0">
+      <div className="bg-muted relative aspect-[4/3] w-full overflow-hidden rounded-t-[24px] sm:aspect-square sm:w-40 sm:shrink-0 sm:rounded-t-none sm:rounded-l-[24px]">
         {project.imageUrl ? (
           <Image
             src={project.imageUrl}
@@ -189,7 +192,7 @@ export function ProjectCard({
               {project.title}
             </h3>
             {scored && !scored.scoreBreakdown.eligible && (
-              <span className="shrink-0 rounded-md bg-red-100 px-1.5 py-0.5 text-[10px] font-black text-red-600">
+              <span className="shrink-0 rounded-xl bg-red-100 px-1.5 py-0.5 text-[10px] font-black text-red-600">
                 Không đủ điều kiện
               </span>
             )}
@@ -240,7 +243,7 @@ export function ProjectCard({
           {project.status && (
             <span
               className={cn(
-                'shrink-0 rounded-md border px-2 py-0.5 text-xs font-bold',
+                'shrink-0 rounded-xl border px-2 py-0.5 text-xs font-bold',
                 getStatusStyle(project.status)
               )}
             >

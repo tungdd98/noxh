@@ -48,35 +48,35 @@ button {
   --radius-xl: calc(var(--radius) * 1.4);
 }
 
-/* ─── Light Mode ─────────────────────────────────────── */
+/* ─── Light Mode – Pet Grooming & Spa (Claymorphism) ─── */
 :root {
-  --background: #faf6ee;
-  --foreground: #1a1a1a;
+  --background: #fff7ed;
+  --foreground: #431407;
   --card: #ffffff;
-  --card-foreground: #1a1a1a;
+  --card-foreground: #431407;
   --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  --primary: #16a34a;
+  --popover-foreground: #431407;
+  --primary: #f97316;
   --primary-foreground: #ffffff;
-  --secondary: #dcfce7;
-  --secondary-foreground: #15803d;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #dcfce7;
-  --accent-foreground: #15803d;
+  --secondary: #fed7aa;
+  --secondary-foreground: #9a3412;
+  --muted: #fef3c7;
+  --muted-foreground: #92400e;
+  --accent: #2563eb;
+  --accent-foreground: #ffffff;
   --destructive: #dc2626;
-  --border: #1a1a1a;
-  --input: #faf6ee;
-  --ring: #16a34a;
-  --radius: 10px;
+  --border: #fed7aa;
+  --input: #fff7ed;
+  --ring: #f97316;
+  --radius: 16px;
 
   --success: #16a34a;
   --success-bg: #dcfce7;
-  --warning: #eab308;
-  --warning-bg: #fef9c3;
+  --warning: #d97706;
+  --warning-bg: #fef3c7;
   --destructive-bg: #fee2e2;
   --destructive-foreground: #991b1b;
-  --muted-border: #e4e4e7;
+  --muted-border: #fdba74;
   --info: #0284c7;
   --info-bg: #e0f2fe;
   --info-foreground: #075985;
@@ -84,31 +84,31 @@ button {
 
 /* ─── Dark Mode (not active — no dark toggle in app) ─── */
 .dark {
-  --background: #0f0e1a;
-  --foreground: #e0e7ff;
-  --card: #1a1830;
-  --card-foreground: #e0e7ff;
-  --popover: #1a1830;
-  --popover-foreground: #e0e7ff;
-  --primary: #22c55e;
-  --primary-foreground: #052e16;
-  --secondary: #14532d;
-  --secondary-foreground: #dcfce7;
-  --muted: #1a1830;
-  --muted-foreground: #818cf8;
-  --accent: #14532d;
-  --accent-foreground: #dcfce7;
+  --background: #1c0a00;
+  --foreground: #fff7ed;
+  --card: #2d1500;
+  --card-foreground: #fff7ed;
+  --popover: #2d1500;
+  --popover-foreground: #fff7ed;
+  --primary: #fb923c;
+  --primary-foreground: #1c0a00;
+  --secondary: #7c2d12;
+  --secondary-foreground: #fed7aa;
+  --muted: #3b1a08;
+  --muted-foreground: #fdba74;
+  --accent: #3b82f6;
+  --accent-foreground: #ffffff;
   --destructive: #f87171;
-  --border: #2d2b55;
-  --input: #2d2b55;
-  --ring: #16a34a;
+  --border: #7c2d12;
+  --input: #2d1500;
+  --ring: #fb923c;
   --success: #22c55e;
   --success-bg: #14532d;
   --warning: #fcd34d;
-  --warning-bg: #422006;
+  --warning-bg: #451a03;
   --destructive-bg: #450a0a;
   --destructive-foreground: #fca5a5;
-  --muted-border: #3f3f46;
+  --muted-border: #9a3412;
   --info: #38bdf8;
   --info-bg: #0c4a6e;
   --info-foreground: #bae6fd;
@@ -148,6 +148,55 @@ button {
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* ─── Claymorphism Utilities ────────────────────────── */
+@utility clay-card {
+  border-radius: calc(var(--radius) * 2);
+  background: var(--card);
+  box-shadow:
+    0 8px 0 0 rgba(234, 88, 12, 0.2),
+    0 16px 32px rgba(0, 0, 0, 0.07);
+}
+
+@utility clay-card-sm {
+  border-radius: calc(var(--radius) * 1.5);
+  background: var(--card);
+  box-shadow:
+    0 4px 0 0 rgba(234, 88, 12, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.07);
+}
+
+@utility clay-btn {
+  border-radius: calc(var(--radius) * 2.5);
+  box-shadow: 0 5px 0 0 rgba(194, 65, 12, 0.55);
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 0 0 rgba(194, 65, 12, 0.55);
+  }
+  &:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 0 rgba(194, 65, 12, 0.55);
+  }
+}
+
+@utility clay-btn-secondary {
+  border-radius: calc(var(--radius) * 2.5);
+  box-shadow: 0 5px 0 0 rgba(253, 186, 116, 0.7);
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 0 0 rgba(253, 186, 116, 0.7);
+  }
+  &:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 0 rgba(253, 186, 116, 0.7);
   }
 }
 

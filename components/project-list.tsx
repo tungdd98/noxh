@@ -47,7 +47,7 @@ export function ProjectList({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="border-border bg-card flex animate-pulse overflow-hidden rounded-[14px] border-2 shadow-[3px_3px_0_var(--border)]"
+            className="bg-card flex animate-pulse overflow-hidden rounded-[24px] shadow-[0_8px_0_0_rgba(234,88,12,0.18),0_12px_24px_rgba(0,0,0,0.07)]"
           >
             <div className="bg-muted aspect-square w-40 shrink-0" />
             <div className="flex-1 p-3">
@@ -81,7 +81,7 @@ export function ProjectList({
           {totalCount} dự án
         </p>
 
-        <div className="space-y-3">
+        <div className="space-y-5">
           {projects.map((project, i) => (
             <ProjectCard
               key={project.id}
