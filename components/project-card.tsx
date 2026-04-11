@@ -12,6 +12,7 @@ import type { Project, ScoredProject } from '@/types/noxh';
 
 type Props = {
   project: Project | ScoredProject;
+  rank?: number;
   onClick: () => void;
 };
 
@@ -19,41 +20,141 @@ function isScoredProject(p: Project | ScoredProject): p is ScoredProject {
   return 'totalScore' in p;
 }
 
-function ScoreBadge({ score, eligible }: { score: number; eligible: boolean }) {
-  const color = !eligible
+// ─── Status badge ─────────────────────────────────────────────────────────────
+
+function getStatusStyle(status: string): string {
+  const s = status.toLowerCase();
+  if (s.includes('đang thi công'))
+    return 'bg-blue-100 text-blue-700 border-blue-200';
+  if (s.includes('bàn giao') || s.includes('hoàn thành'))
+    return 'bg-green-100 text-green-700 border-green-200';
+  if (s.includes('mở bán'))
+    return 'bg-orange-100 text-orange-700 border-orange-200';
+  if (s.includes('dừng') || s.includes('tạm dừng'))
+    return 'bg-red-100 text-red-600 border-red-200';
+  return 'bg-muted text-muted-foreground border-muted-border';
+}
+
+// ─── Rank badge ────────────────────────────────────────────────────────────────
+
+const RANK_CONFIG = {
+  1: {
+    icon: '🥇',
+    badge: 'bg-yellow-400 text-yellow-900',
+    border: 'border-yellow-400 shadow-[3px_3px_0_theme(colors.yellow.400)]',
+  },
+  2: {
+    icon: '🥈',
+    badge: 'bg-zinc-300 text-zinc-800',
+    border: 'border-zinc-400 shadow-[3px_3px_0_theme(colors.zinc.400)]',
+  },
+  3: {
+    icon: '🥉',
+    badge: 'bg-amber-600 text-white',
+    border: 'border-amber-600 shadow-[3px_3px_0_theme(colors.amber.600)]',
+  },
+} as const;
+
+// ─── Score badge ───────────────────────────────────────────────────────────────
+
+function ScoreBadge({
+  score,
+  eligible,
+  rank,
+}: {
+  score: number;
+  eligible: boolean;
+  rank?: number;
+}) {
+  const rankCfg = rank && rank <= 3 ? RANK_CONFIG[rank as 1 | 2 | 3] : null;
+
+  const bgColor = !eligible
     ? 'bg-destructive text-destructive-foreground'
-    : score >= 70
-      ? 'bg-green-600 text-white'
-      : score >= 40
-        ? 'bg-amber-500 text-white'
-        : 'bg-red-500 text-white';
+    : rankCfg
+      ? rankCfg.badge
+      : score >= 70
+        ? 'bg-green-600 text-white'
+        : score >= 40
+          ? 'bg-amber-500 text-white'
+          : 'bg-red-500 text-white';
 
   return (
     <div
       className={cn(
-        'absolute top-2 right-2 flex h-9 w-9 items-center justify-center rounded-full text-xs font-black shadow-[2px_2px_0_rgba(0,0,0,0.3)]',
-        color
+        'absolute top-3 right-3 flex h-10 w-10 flex-col items-center justify-center rounded-full text-xs font-black shadow-[2px_2px_0_rgba(0,0,0,0.25)]',
+        bgColor
       )}
     >
-      {score}
+      {rankCfg ? (
+        <>
+          <span className="text-base leading-none">{rankCfg.icon}</span>
+          <span className="text-[9px] leading-none">{score}</span>
+        </>
+      ) : (
+        score
+      )}
     </div>
   );
 }
 
-export function ProjectCard({ project, onClick }: Readonly<Props>) {
+// ─── Criteria mini-scores ──────────────────────────────────────────────────────
+
+const CRITERIA_CHIPS = [
+  { key: 'finance' as const, icon: '💰', label: 'TC' },
+  { key: 'location' as const, icon: '📍', label: 'VT' },
+  { key: 'urgency' as const, icon: '⏰', label: 'UG' },
+  { key: 'investorReputation' as const, icon: '🏢', label: 'CĐT' },
+] as const;
+
+function criteriaColor(score: number | null): string {
+  if (score === null) return 'bg-muted text-muted-foreground';
+  if (score >= 70) return 'bg-green-100 text-green-700';
+  if (score >= 40) return 'bg-amber-100 text-amber-700';
+  return 'bg-red-100 text-red-600';
+}
+
+function CriteriaMiniScores({ scored }: { scored: ScoredProject }) {
+  return (
+    <div className="flex gap-1">
+      {CRITERIA_CHIPS.map(({ key, icon }) => {
+        const score = scored.scoreBreakdown[key];
+        return (
+          <span
+            key={key}
+            className={cn(
+              'flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold',
+              criteriaColor(score)
+            )}
+          >
+            {icon}
+            <span>{score ?? '—'}</span>
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Card ──────────────────────────────────────────────────────────────────────
+
+export function ProjectCard({ project, rank, onClick }: Readonly<Props>) {
   const totalUnits = parseTotalUnits(project.scale);
   const scored = isScoredProject(project) ? project : null;
+  const rankCfg = rank && rank <= 3 ? RANK_CONFIG[rank as 1 | 2 | 3] : null;
 
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        'bg-card border-border flex w-full overflow-hidden rounded-2xl border-2 text-left transition-all',
-        'shadow-[3px_3px_0_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--border)]',
+        'bg-card border-border relative flex w-full overflow-hidden rounded-2xl border-2 text-left transition-all',
+        rankCfg
+          ? rankCfg.border
+          : 'shadow-[3px_3px_0_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--border)]',
         scored && !scored.scoreBreakdown.eligible && 'opacity-60'
       )}
     >
+      {/* Thumbnail */}
       <div className="bg-muted relative aspect-square w-40 shrink-0">
         {project.imageUrl ? (
           <Image
@@ -69,23 +170,27 @@ export function ProjectCard({ project, onClick }: Readonly<Props>) {
             🏠
           </div>
         )}
-
-        {scored && (
-          <ScoreBadge
-            score={scored.totalScore}
-            eligible={scored.scoreBreakdown.eligible}
-          />
-        )}
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
+      {/* Score badge — absolute on whole card */}
+      {scored && (
+        <ScoreBadge
+          score={scored.totalScore}
+          eligible={scored.scoreBreakdown.eligible}
+          rank={rank}
+        />
+      )}
+
+      {/* Content */}
+      <div className="flex min-w-0 flex-1 flex-col justify-between p-3 pr-12">
+        {/* Title + eligible tag */}
         <div>
           <div className="mb-0.5 flex flex-wrap items-center gap-1.5">
             <h3 className="text-foreground line-clamp-1 text-base leading-tight font-extrabold">
               {project.title}
             </h3>
             {scored && !scored.scoreBreakdown.eligible && (
-              <span className="shrink-0 rounded-md bg-red-100 px-1.5 py-0.5 text-[10px] font-black text-red-600 dark:bg-red-900/30 dark:text-red-400">
+              <span className="shrink-0 rounded-md bg-red-100 px-1.5 py-0.5 text-[10px] font-black text-red-600">
                 Không đủ điều kiện
               </span>
             )}
@@ -98,28 +203,26 @@ export function ProjectCard({ project, onClick }: Readonly<Props>) {
           )}
         </div>
 
-        <div className="flex flex-col gap-y-1">
-          {scored?.distanceKm !== null && scored?.distanceKm !== undefined && (
+        {/* Meta info */}
+        <div className="flex flex-col gap-y-1 py-1">
+          {scored?.distanceKm != null && (
             <span className="text-muted-foreground flex items-center gap-1 text-xs font-semibold">
               <Navigation className="h-3 w-3 shrink-0" />
               {scored.distanceKm}km từ nơi làm việc
             </span>
           )}
-
           {totalUnits !== null && (
             <span className="text-muted-foreground flex items-center gap-1 text-xs font-semibold">
               <Home className="h-3 w-3 shrink-0" />
               {totalUnits.toLocaleString('vi-VN')} căn
             </span>
           )}
-
           {project.owner && (
             <span className="text-muted-foreground flex items-center gap-1 text-xs font-semibold">
               <Building2 className="h-3 w-3 shrink-0" />
               <span className="line-clamp-1">{project.owner}</span>
             </span>
           )}
-
           {project.applyTime && project.applyTime !== '--' && (
             <span className="text-muted-foreground flex items-center gap-1 text-xs font-semibold">
               <CalendarDays className="h-3 w-3 shrink-0" />
@@ -128,9 +231,16 @@ export function ProjectCard({ project, onClick }: Readonly<Props>) {
           )}
         </div>
 
-        <div className="mt-1.5 flex justify-end gap-2">
+        {/* Bottom row: criteria chips + status badge */}
+        <div className="mt-1 flex items-center justify-between gap-2">
+          {scored ? <CriteriaMiniScores scored={scored} /> : <span />}
           {project.status && (
-            <span className="border-muted-border bg-muted text-muted-foreground shrink-0 rounded-md border px-2 py-0.5 text-xs font-bold">
+            <span
+              className={cn(
+                'shrink-0 rounded-md border px-2 py-0.5 text-xs font-bold',
+                getStatusStyle(project.status)
+              )}
+            >
               {project.status}
             </span>
           )}

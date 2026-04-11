@@ -22,6 +22,7 @@ type Props = {
   error: string | null;
   onPageChange: (page: number) => void;
   pageSize: number;
+  rankOffset?: number;
 };
 
 export function ProjectList({
@@ -32,6 +33,7 @@ export function ProjectList({
   error,
   onPageChange,
   pageSize,
+  rankOffset = 0,
 }: Readonly<Props>) {
   const [selectedProject, setSelectedProject] = useState<
     Project | ScoredProject | null
@@ -78,10 +80,11 @@ export function ProjectList({
         </p>
 
         <div className="space-y-3">
-          {projects.map((project) => (
+          {projects.map((project, i) => (
             <ProjectCard
               key={project.id}
               project={project}
+              rank={rankOffset + i + 1}
               onClick={() => setSelectedProject(project)}
             />
           ))}
