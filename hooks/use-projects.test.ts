@@ -28,6 +28,10 @@ const mockProjects: Project[] = [
     imageUrl: 'https://example.com/img.jpg',
     url: 'https://example.com',
     scrapedAt: '2026-04-10T10:15:24.165Z',
+    lat: 21.02,
+    lng: 105.83,
+    investorTier: 'experienced' as const,
+    targetGroup: null,
   },
 ];
 
@@ -49,6 +53,10 @@ const mockDbRows = [
     image_url: 'https://example.com/img.jpg',
     url: 'https://example.com',
     scraped_at: '2026-04-10T10:15:24.165Z',
+    lat: 21.02,
+    lng: 105.83,
+    investor_tier: 'experienced' as const,
+    target_group: null,
   },
 ];
 
@@ -87,6 +95,15 @@ describe('useProjects', () => {
     expect(result.current.projects[0].imageUrl).toBe(
       'https://example.com/img.jpg'
     );
+  });
+
+  it('maps lat, lng, investor_tier, target_group correctly', async () => {
+    const { result } = renderHook(() => useProjects());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.projects[0].lat).toBe(21.02);
+    expect(result.current.projects[0].lng).toBe(105.83);
+    expect(result.current.projects[0].investorTier).toBe('experienced');
+    expect(result.current.projects[0].targetGroup).toBeNull();
   });
 
   it('sets error message when Supabase returns error', async () => {

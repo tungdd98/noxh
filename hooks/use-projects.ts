@@ -26,6 +26,10 @@ type DbRow = {
   image_url: string | null;
   url: string | null;
   scraped_at: string | null;
+  lat: number | null;
+  lng: number | null;
+  investor_tier: 'state' | 'experienced' | 'new' | null;
+  target_group: string | null;
 };
 
 function toProject(row: DbRow): Project {
@@ -45,6 +49,10 @@ function toProject(row: DbRow): Project {
     imageUrl: row.image_url,
     url: row.url,
     scrapedAt: row.scraped_at,
+    lat: row.lat,
+    lng: row.lng,
+    investorTier: row.investor_tier,
+    targetGroup: row.target_group,
   };
 }
 
