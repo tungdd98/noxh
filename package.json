@@ -11,7 +11,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepare": "husky"
+    "prepare": "husky",
+    "geocode-db": "dotenv -e .env.local -- npx tsx scripts/geocode-projects.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",
@@ -38,6 +39,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.1",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "eslint-config-prettier": "^10.1.8",
@@ -48,6 +50,7 @@
     "prettier-plugin-tailwindcss": "^0.7.2",
     "shadcn": "^4.1.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.1.3"
   },
