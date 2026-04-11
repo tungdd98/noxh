@@ -57,42 +57,37 @@ const RANK_CONFIG = {
 
 // ─── Score badge ───────────────────────────────────────────────────────────────
 
-function ScoreBadge({
-  score,
-  eligible,
-  rank,
-}: {
-  score: number;
-  eligible: boolean;
-  rank?: number;
-}) {
-  const rankCfg = rank && rank <= 3 ? RANK_CONFIG[rank as 1 | 2 | 3] : null;
-
+function ScoreBadge({ score, eligible }: { score: number; eligible: boolean }) {
   const bgColor = !eligible
     ? 'bg-destructive text-destructive-foreground'
-    : rankCfg
-      ? rankCfg.badge
-      : score >= 70
-        ? 'bg-green-600 text-white'
-        : score >= 40
-          ? 'bg-amber-500 text-white'
-          : 'bg-red-500 text-white';
+    : score >= 70
+      ? 'bg-green-600 text-white'
+      : score >= 40
+        ? 'bg-amber-500 text-white'
+        : 'bg-red-500 text-white';
 
   return (
     <div
       className={cn(
-        'absolute top-3 right-3 flex h-10 w-10 flex-col items-center justify-center rounded-full text-xs font-black shadow-[2px_2px_0_rgba(0,0,0,0.25)]',
+        'absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full text-sm font-black shadow-[2px_2px_0_rgba(0,0,0,0.25)]',
         bgColor
       )}
     >
-      {rankCfg ? (
-        <>
-          <span className="text-base leading-none">{rankCfg.icon}</span>
-          <span className="text-[9px] leading-none">{score}</span>
-        </>
-      ) : (
-        score
+      {score}
+    </div>
+  );
+}
+
+function MedalBadge({ rank }: { rank: 1 | 2 | 3 }) {
+  const cfg = RANK_CONFIG[rank];
+  return (
+    <div
+      className={cn(
+        'absolute top-2 left-2 flex h-7 w-7 items-center justify-center rounded-full text-base shadow-[1px_1px_0_rgba(0,0,0,0.2)]',
+        cfg.badge
       )}
+    >
+      {cfg.icon}
     </div>
   );
 }
@@ -170,19 +165,22 @@ export function ProjectCard({ project, rank, onClick }: Readonly<Props>) {
             🏠
           </div>
         )}
+        {/* Medal icon — top-left of thumbnail */}
+        {rankCfg && rank && rank <= 3 && (
+          <MedalBadge rank={rank as 1 | 2 | 3} />
+        )}
       </div>
 
-      {/* Score badge — absolute on whole card */}
+      {/* Score badge — top-right of whole card */}
       {scored && (
         <ScoreBadge
           score={scored.totalScore}
           eligible={scored.scoreBreakdown.eligible}
-          rank={rank}
         />
       )}
 
       {/* Content */}
-      <div className="flex min-w-0 flex-1 flex-col justify-between p-3 pr-12">
+      <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
         {/* Title + eligible tag */}
         <div>
           <div className="mb-0.5 flex flex-wrap items-center gap-1.5">
