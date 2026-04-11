@@ -267,24 +267,22 @@ export function UserForm({ onSubmit, loading }: Props) {
           <div className="border-border space-y-3 border-t-2 px-3.5 py-3">
             {(Object.keys(CRITERIA_LABELS) as (keyof CriteriaWeights)[]).map(
               (key) => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between gap-2"
-                >
-                  <span className="text-foreground text-xs font-semibold">
+                <div key={key} className="space-y-1.5">
+                  <span className="text-foreground text-xs font-bold">
                     {CRITERIA_LABELS[key]}
                   </span>
-                  <div className="flex gap-1">
-                    {WEIGHT_OPTIONS.map((opt) => (
+                  <div className="border-border flex overflow-hidden rounded-[8px] border-2">
+                    {WEIGHT_OPTIONS.map((opt, i) => (
                       <button
                         key={opt.value}
                         type="button"
                         onClick={() => setWeight(key, opt.value)}
                         className={cn(
-                          'rounded-md border px-2 py-0.5 text-xs font-bold transition-all',
+                          'flex-1 py-1.5 text-xs font-bold transition-all',
+                          i > 0 && 'border-border border-l-2',
                           weights[key] === opt.value
-                            ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-border bg-input text-muted-foreground hover:bg-muted'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-input text-muted-foreground hover:bg-muted hover:text-foreground'
                         )}
                       >
                         {opt.label}
@@ -296,13 +294,15 @@ export function UserForm({ onSubmit, loading }: Props) {
             )}
 
             {/* Đối tượng — bắt buộc, không tắt */}
-            <div className="flex items-center justify-between gap-2 opacity-60">
-              <span className="text-foreground text-xs font-semibold">
+            <div className="space-y-1.5 opacity-60">
+              <span className="text-foreground text-xs font-bold">
                 Đối tượng
               </span>
-              <span className="border-border rounded-md border px-2 py-0.5 text-xs font-bold">
-                🔒 Bắt buộc
-              </span>
+              <div className="border-border flex items-center justify-center rounded-[8px] border-2 py-1.5">
+                <span className="text-muted-foreground text-xs font-bold">
+                  🔒 Bắt buộc
+                </span>
+              </div>
             </div>
           </div>
         )}

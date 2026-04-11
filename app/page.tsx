@@ -77,7 +77,7 @@ export default function NOXHPage() {
 
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-col md:grid md:grid-cols-[300px_1fr]">
-          <aside className="border-border bg-card border-b-2 p-6 md:sticky md:top-15 md:h-[calc(100vh-60px)] md:overflow-y-auto md:border-r-2 md:border-b-0">
+          <aside className="border-border bg-card scrollbar-thin border-b-2 p-6 md:sticky md:top-15 md:h-[calc(100vh-60px)] md:overflow-y-auto md:border-r-2 md:border-b-0">
             <p className="text-primary mb-5 text-xs font-extrabold tracking-widest uppercase">
               Thông tin của bạn
             </p>
