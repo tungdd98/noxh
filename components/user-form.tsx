@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
@@ -14,19 +15,40 @@ import {
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import type { UserInfo } from '@/types/noxh';
+import type { UserInfo, CriteriaWeights } from '@/types/noxh';
+import {
+  DEFAULT_CRITERIA_WEIGHTS,
+  CATEGORY_OPTIONS,
+  HOUSING_STATUS_OPTIONS,
+} from '@/types/noxh';
 
 type Props = {
-  onSubmit: (info: UserInfo) => void;
+  onSubmit: (info: UserInfo, weights: CriteriaWeights) => void;
+  loading?: boolean;
 };
 
 const DEFAULT_FORM: UserInfo = {
   income: 0,
+  savings: 0,
+  workAddress: '',
   maritalStatus: 'single',
-  provinceId: '',
   category: '',
   housingStatus: 'no_house',
   previouslyBought: false,
+};
+
+const WEIGHT_OPTIONS = [
+  { value: 'high', label: 'Cao' },
+  { value: 'medium', label: 'TB' },
+  { value: 'low', label: 'Thấp' },
+  { value: 'off', label: 'Tắt' },
+] as const;
+
+const CRITERIA_LABELS: Record<keyof CriteriaWeights, string> = {
+  finance: 'Tài chính',
+  location: 'Vị trí',
+  urgency: 'Urgency',
+  investorReputation: 'Uy tín CĐT',
 };
 
 const INPUT_CLASS =
@@ -35,20 +57,32 @@ const INPUT_CLASS =
 const SELECT_TRIGGER_CLASS =
   'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto data-[size=default]:h-auto';
 
-export function UserForm({ onSubmit }: Props) {
+export function UserForm({ onSubmit, loading }: Props) {
   const [form, setForm] = useState<UserInfo>(DEFAULT_FORM);
+  const [weights, setWeights] = useState<CriteriaWeights>(
+    DEFAULT_CRITERIA_WEIGHTS
+  );
+  const [criteriaOpen, setCriteriaOpen] = useState(false);
 
   const isValid =
-    form.income > 0 && form.provinceId !== '' && form.category !== '';
+    form.income > 0 && form.category !== '' && form.workAddress.trim() !== '';
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!isValid) return;
-    onSubmit(form);
+    onSubmit(form, weights);
+  }
+
+  function setWeight(
+    key: keyof CriteriaWeights,
+    value: CriteriaWeights[keyof CriteriaWeights]
+  ) {
+    setWeights((w) => ({ ...w, [key]: value }));
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Hôn nhân */}
       <div className="space-y-1.5">
         <Label className="text-foreground text-xs font-bold">
           Tình trạng hôn nhân
@@ -87,6 +121,7 @@ export function UserForm({ onSubmit }: Props) {
         </RadioGroup>
       </div>
 
+      {/* Thu nhập */}
       <div className="space-y-1.5">
         <Label className="text-foreground text-xs font-bold" htmlFor="income">
           Thu nhập hàng tháng
@@ -107,27 +142,42 @@ export function UserForm({ onSubmit }: Props) {
         )}
       </div>
 
+      {/* Vốn tự có */}
       <div className="space-y-1.5">
-        <Label className="text-foreground text-xs font-bold">
-          Tỉnh / Thành phố muốn mua
+        <Label className="text-foreground text-xs font-bold" htmlFor="savings">
+          Vốn tự có
         </Label>
-        <Select
-          value={form.provinceId}
-          onValueChange={(v) => setForm((f) => ({ ...f, provinceId: v }))}
-        >
-          <SelectTrigger className={SELECT_TRIGGER_CLASS}>
-            <SelectValue placeholder="Chọn tỉnh thành..." />
-          </SelectTrigger>
-          <SelectContent>
-            {([] as { id: string; label: string }[]).map((p) => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <CurrencyInput
+          id="savings"
+          placeholder="VD: 500.000.000"
+          value={form.savings || ''}
+          onChange={(val) =>
+            setForm((f) => ({ ...f, savings: val === '' ? 0 : val }))
+          }
+          className={INPUT_CLASS}
+        />
       </div>
 
+      {/* Địa chỉ nơi làm việc */}
+      <div className="space-y-1.5">
+        <Label
+          className="text-foreground text-xs font-bold"
+          htmlFor="workAddress"
+        >
+          Địa chỉ nơi làm việc
+        </Label>
+        <Input
+          id="workAddress"
+          placeholder="VD: Xuân Đỉnh, Bắc Từ Liêm"
+          value={form.workAddress}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, workAddress: e.target.value }))
+          }
+          className={INPUT_CLASS}
+        />
+      </div>
+
+      {/* Đối tượng */}
       <div className="space-y-1.5">
         <Label className="text-foreground text-xs font-bold">Đối tượng</Label>
         <Select
@@ -138,7 +188,7 @@ export function UserForm({ onSubmit }: Props) {
             <SelectValue placeholder="Chọn đối tượng..." />
           </SelectTrigger>
           <SelectContent>
-            {([] as { id: string; label: string }[]).map((c) => (
+            {CATEGORY_OPTIONS.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 {c.label}
               </SelectItem>
@@ -147,6 +197,7 @@ export function UserForm({ onSubmit }: Props) {
         </Select>
       </div>
 
+      {/* Tình trạng nhà ở */}
       <div className="space-y-1.5">
         <Label className="text-foreground text-xs font-bold">
           Tình trạng nhà ở hiện tại
@@ -161,7 +212,7 @@ export function UserForm({ onSubmit }: Props) {
           }
           className="flex flex-col gap-2"
         >
-          {([] as { id: string; label: string }[]).map((c) => (
+          {HOUSING_STATUS_OPTIONS.map((c) => (
             <Label
               key={c.id}
               htmlFor={`housing-${c.id}`}
@@ -183,6 +234,7 @@ export function UserForm({ onSubmit }: Props) {
         </RadioGroup>
       </div>
 
+      {/* Đã từng mua */}
       <div className="flex items-center gap-2.5">
         <Checkbox
           id="previously-bought"
@@ -200,8 +252,69 @@ export function UserForm({ onSubmit }: Props) {
         </Label>
       </div>
 
-      <Button type="submit" size="lg" disabled={!isValid} className="w-full">
-        Kiểm tra điều kiện →
+      {/* Tiêu chí đánh giá — accordion */}
+      <div className="border-border rounded-[10px] border-2">
+        <button
+          type="button"
+          onClick={() => setCriteriaOpen((o) => !o)}
+          className="text-foreground flex w-full items-center justify-between px-3.5 py-2.5 text-xs font-bold"
+        >
+          <span>Tiêu chí đánh giá</span>
+          <span>{criteriaOpen ? '▲' : '▼'}</span>
+        </button>
+
+        {criteriaOpen && (
+          <div className="border-border space-y-3 border-t-2 px-3.5 py-3">
+            {(Object.keys(CRITERIA_LABELS) as (keyof CriteriaWeights)[]).map(
+              (key) => (
+                <div
+                  key={key}
+                  className="flex items-center justify-between gap-2"
+                >
+                  <span className="text-foreground text-xs font-semibold">
+                    {CRITERIA_LABELS[key]}
+                  </span>
+                  <div className="flex gap-1">
+                    {WEIGHT_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setWeight(key, opt.value)}
+                        className={cn(
+                          'rounded-md border px-2 py-0.5 text-xs font-bold transition-all',
+                          weights[key] === opt.value
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-border bg-input text-muted-foreground hover:bg-muted'
+                        )}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )
+            )}
+
+            {/* Đối tượng — bắt buộc, không tắt */}
+            <div className="flex items-center justify-between gap-2 opacity-60">
+              <span className="text-foreground text-xs font-semibold">
+                Đối tượng
+              </span>
+              <span className="border-border rounded-md border px-2 py-0.5 text-xs font-bold">
+                🔒 Bắt buộc
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <Button
+        type="submit"
+        size="lg"
+        disabled={!isValid || loading}
+        className="w-full"
+      >
+        {loading ? 'Đang tính...' : 'Tìm dự án phù hợp →'}
       </Button>
     </form>
   );
