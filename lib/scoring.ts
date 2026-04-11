@@ -101,8 +101,14 @@ export function scoreInvestorReputation(project: Project): number {
   }
 }
 
+const INCOME_LIMIT: Record<'single' | 'married', number> = {
+  single: 15_000_000,
+  married: 30_000_000,
+};
+
 export function checkEligible(project: Project, userInfo: UserInfo): boolean {
   if (userInfo.previouslyBought) return false;
+  if (userInfo.income > INCOME_LIMIT[userInfo.maritalStatus]) return false;
   if (!project.targetGroup) return true;
   const allowed = project.targetGroup.split(',').map((s) => s.trim());
   return allowed.includes(userInfo.category);

@@ -70,13 +70,18 @@ const SELECT_TRIGGER_CLASS =
   'w-full rounded-[10px] border-2 border-border bg-input px-3.5 py-2.5 text-sm font-medium text-foreground h-auto data-[size=default]:h-auto';
 
 export function UserForm({ onSubmit, loading }: Props) {
-  const [form, setForm] = useState<UserInfo>(() =>
-    readLS(LS_FORM_KEY, DEFAULT_FORM)
-  );
-  const [weights, setWeights] = useState<CriteriaWeights>(() =>
-    readLS(LS_WEIGHTS_KEY, DEFAULT_CRITERIA_WEIGHTS)
+  const [form, setForm] = useState<UserInfo>(DEFAULT_FORM);
+  const [weights, setWeights] = useState<CriteriaWeights>(
+    DEFAULT_CRITERIA_WEIGHTS
   );
   const [criteriaOpen, setCriteriaOpen] = useState(false);
+
+  // Load từ localStorage sau khi hydrate xong (tránh server/client mismatch)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setForm(readLS(LS_FORM_KEY, DEFAULT_FORM));
+    setWeights(readLS(LS_WEIGHTS_KEY, DEFAULT_CRITERIA_WEIGHTS));
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(LS_FORM_KEY, JSON.stringify(form));

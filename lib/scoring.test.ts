@@ -189,6 +189,42 @@ describe('checkEligible', () => {
     const p = { ...BASE_PROJECT, targetGroup: 'armed_forces' };
     expect(checkEligible(p, BASE_USER)).toBe(false);
   });
+
+  it('returns false when single person income exceeds 15tr', () => {
+    const user = {
+      ...BASE_USER,
+      maritalStatus: 'single' as const,
+      income: 43_000_000,
+    };
+    expect(checkEligible(BASE_PROJECT, user)).toBe(false);
+  });
+
+  it('returns true when single person income is exactly 15tr', () => {
+    const user = {
+      ...BASE_USER,
+      maritalStatus: 'single' as const,
+      income: 15_000_000,
+    };
+    expect(checkEligible(BASE_PROJECT, user)).toBe(true);
+  });
+
+  it('returns false when married couple income exceeds 30tr', () => {
+    const user = {
+      ...BASE_USER,
+      maritalStatus: 'married' as const,
+      income: 31_000_000,
+    };
+    expect(checkEligible(BASE_PROJECT, user)).toBe(false);
+  });
+
+  it('returns true when married couple income is within 30tr', () => {
+    const user = {
+      ...BASE_USER,
+      maritalStatus: 'married' as const,
+      income: 30_000_000,
+    };
+    expect(checkEligible(BASE_PROJECT, user)).toBe(true);
+  });
 });
 
 // scoreAndSort
