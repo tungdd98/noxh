@@ -124,6 +124,24 @@ button {
   html {
     @apply font-sans;
   }
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--muted-border);
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--border);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-border) transparent;
+  }
 }
 
 @utility scrollbar-hide {

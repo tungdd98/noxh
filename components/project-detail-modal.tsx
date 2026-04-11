@@ -1,15 +1,17 @@
 'use client';
 
 import Image from 'next/image';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, XIcon } from 'lucide-react';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { getStatusStyle } from '@/lib/project-utils';
 import type { Project, ScoredProject, CriteriaWeights } from '@/types/noxh';
 
 type Props = {
@@ -75,132 +77,149 @@ export function ProjectDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto p-0 sm:max-w-2xl">
-        {project && (
-          <>
-            <div className="bg-muted relative aspect-video w-full shrink-0">
-              {project.imageUrl ? (
-                <Image
-                  src={project.imageUrl}
-                  alt={project.title}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-4xl">
-                  🏠
-                </div>
-              )}
-            </div>
+      <DialogContent
+        className="flex max-h-[90vh] flex-col p-0 sm:max-w-2xl"
+        showCloseButton={false}
+      >
+        {/* Close button — absolute to DialogContent, never scrolls */}
+        <DialogClose className="absolute top-4 right-4 z-10 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden">
+          <XIcon className="size-4" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
 
-            <div className="p-6">
-              <DialogHeader className="mb-4">
-                <DialogTitle className="text-xl leading-tight font-extrabold">
-                  {project.title}
-                </DialogTitle>
-                {project.status && (
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="border-muted-border bg-muted text-muted-foreground shrink-0 rounded-md border px-2 py-0.5 text-xs font-bold">
-                      {project.status}
-                    </span>
+        {/* Scrollable body */}
+        <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto">
+          {project && (
+            <>
+              <div className="bg-muted relative aspect-video w-full shrink-0">
+                {project.imageUrl ? (
+                  <Image
+                    src={project.imageUrl}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-4xl">
+                    🏠
                   </div>
                 )}
-              </DialogHeader>
-
-              {/* Score breakdown section */}
-              {scored && (
-                <div className="border-border mb-6 space-y-3 rounded-[10px] border-2 p-4">
-                  <p className="text-primary text-xs font-extrabold tracking-widest uppercase">
-                    Điểm phù hợp với bạn — {scored.totalScore}/100
-                  </p>
-                  {!scored.scoreBreakdown.eligible && (
-                    <p className="text-xs font-semibold text-red-500">
-                      ⚠️ Bạn có thể không đủ điều kiện cho dự án này
-                    </p>
-                  )}
-                  {(!weights || weights.finance !== 'off') && (
-                    <ScoreBar
-                      label="Tài chính"
-                      score={scored.scoreBreakdown.finance}
-                    />
-                  )}
-                  {(!weights || weights.location !== 'off') && (
-                    <ScoreBar
-                      label="Vị trí"
-                      score={scored.scoreBreakdown.location}
-                    />
-                  )}
-                  {(!weights || weights.urgency !== 'off') && (
-                    <ScoreBar
-                      label="Urgency"
-                      score={scored.scoreBreakdown.urgency}
-                    />
-                  )}
-                  {(!weights || weights.investorReputation !== 'off') && (
-                    <ScoreBar
-                      label="Uy tín CĐT"
-                      score={scored.scoreBreakdown.investorReputation}
-                    />
-                  )}
-                  {scored.distanceKm !== null && (
-                    <p className="text-muted-foreground text-xs">
-                      📍 Cách nơi làm việc {scored.distanceKm}km (đường chim
-                      bay)
-                    </p>
-                  )}
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <InfoRow label="Giá bán" value={project.price} />
-                <InfoRow label="Bàn giao" value={project.handover} />
-                <InfoRow
-                  label="Địa chỉ"
-                  value={project.address}
-                  className="sm:col-span-2"
-                />
-                <InfoRow
-                  label="Nhà đầu tư"
-                  value={project.owner}
-                  className="sm:col-span-2"
-                />
-                <InfoRow
-                  label="Thời gian thu hồ sơ"
-                  value={project.applyTime}
-                  className="sm:col-span-2"
-                />
-                <InfoRow
-                  label="Quy mô"
-                  value={project.scale}
-                  className="sm:col-span-2"
-                />
-                <InfoRow label="Diện tích khu đất" value={project.area} />
-                <InfoRow label="Mật độ xây dựng" value={project.density} />
-                <InfoRow
-                  label="Phí bảo trì"
-                  value={project.maintenance}
-                  className="sm:col-span-2"
-                />
               </div>
 
-              {project.url && (
-                <div className="mt-6 flex justify-end">
-                  <Button asChild>
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="size-4" />
-                      Xem bài viết
-                    </a>
-                  </Button>
+              <div className="p-6">
+                <DialogHeader className="mb-4">
+                  <DialogTitle className="text-xl leading-tight font-extrabold">
+                    {project.title}
+                  </DialogTitle>
+                  {project.status && (
+                    <div className="flex items-start justify-between gap-3">
+                      <span
+                        className={cn(
+                          'shrink-0 rounded-md border px-2 py-0.5 text-xs font-bold',
+                          getStatusStyle(project.status)
+                        )}
+                      >
+                        {project.status}
+                      </span>
+                    </div>
+                  )}
+                </DialogHeader>
+
+                {/* Score breakdown section */}
+                {scored && (
+                  <div className="border-border mb-6 space-y-3 rounded-[10px] border-2 p-4">
+                    <p className="text-primary text-xs font-extrabold tracking-widest uppercase">
+                      Điểm phù hợp với bạn — {scored.totalScore}/100
+                    </p>
+                    {!scored.scoreBreakdown.eligible && (
+                      <p className="text-xs font-semibold text-red-500">
+                        ⚠️ Bạn có thể không đủ điều kiện cho dự án này
+                      </p>
+                    )}
+                    {(!weights || weights.finance !== 'off') && (
+                      <ScoreBar
+                        label="Tài chính"
+                        score={scored.scoreBreakdown.finance}
+                      />
+                    )}
+                    {(!weights || weights.location !== 'off') && (
+                      <ScoreBar
+                        label="Vị trí"
+                        score={scored.scoreBreakdown.location}
+                      />
+                    )}
+                    {(!weights || weights.urgency !== 'off') && (
+                      <ScoreBar
+                        label="Mức độ cấp thiết"
+                        score={scored.scoreBreakdown.urgency}
+                      />
+                    )}
+                    {(!weights || weights.investorReputation !== 'off') && (
+                      <ScoreBar
+                        label="Uy tín CĐT"
+                        score={scored.scoreBreakdown.investorReputation}
+                      />
+                    )}
+                    {scored.distanceKm !== null && (
+                      <p className="text-muted-foreground text-xs">
+                        📍 Cách nơi làm việc {scored.distanceKm}km (đường chim
+                        bay)
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <InfoRow label="Giá bán" value={project.price} />
+                  <InfoRow label="Bàn giao" value={project.handover} />
+                  <InfoRow
+                    label="Địa chỉ"
+                    value={project.address}
+                    className="sm:col-span-2"
+                  />
+                  <InfoRow
+                    label="Nhà đầu tư"
+                    value={project.owner}
+                    className="sm:col-span-2"
+                  />
+                  <InfoRow
+                    label="Thời gian thu hồ sơ"
+                    value={project.applyTime}
+                    className="sm:col-span-2"
+                  />
+                  <InfoRow
+                    label="Quy mô"
+                    value={project.scale}
+                    className="sm:col-span-2"
+                  />
+                  <InfoRow label="Diện tích khu đất" value={project.area} />
+                  <InfoRow label="Mật độ xây dựng" value={project.density} />
+                  <InfoRow
+                    label="Phí bảo trì"
+                    value={project.maintenance}
+                    className="sm:col-span-2"
+                  />
                 </div>
-              )}
-            </div>
-          </>
-        )}
+
+                {project.url && (
+                  <div className="mt-6 flex justify-end">
+                    <Button asChild>
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="size-4" />
+                        Xem bài viết
+                      </a>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

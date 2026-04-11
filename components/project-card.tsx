@@ -7,7 +7,7 @@ import {
   Navigation,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { parseTotalUnits } from '@/lib/project-utils';
+import { parseTotalUnits, getStatusStyle } from '@/lib/project-utils';
 import type { Project, ScoredProject, CriteriaWeights } from '@/types/noxh';
 
 type Props = {
@@ -19,21 +19,6 @@ type Props = {
 
 function isScoredProject(p: Project | ScoredProject): p is ScoredProject {
   return 'totalScore' in p;
-}
-
-// ─── Status badge ─────────────────────────────────────────────────────────────
-
-function getStatusStyle(status: string): string {
-  const s = status.toLowerCase();
-  if (s.includes('đang thi công'))
-    return 'bg-blue-100 text-blue-700 border-blue-200';
-  if (s.includes('bàn giao') || s.includes('hoàn thành'))
-    return 'bg-green-100 text-green-700 border-green-200';
-  if (s.includes('mở bán'))
-    return 'bg-orange-100 text-orange-700 border-orange-200';
-  if (s.includes('dừng') || s.includes('tạm dừng'))
-    return 'bg-red-100 text-red-600 border-red-200';
-  return 'bg-muted text-muted-foreground border-muted-border';
 }
 
 // ─── Rank badge ────────────────────────────────────────────────────────────────
